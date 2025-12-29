@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Optimized Viewport for Mobile/Tablet to prevent zoom on taps -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Final Physical Assessment</title>
     <style>
         :root {
@@ -15,10 +16,21 @@
             --warning: #ffcc00;
             --text-main: #e0e6ed;
             --text-muted: #94a3b8;
-            --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            /* System font stack for best performance on Windows/Mac/Android/iOS */
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; cursor: none; /* Hide default cursor */ }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        /* Hide default cursor ONLY on desktop/non-touch devices */
+        @media (hover: hover) and (pointer: fine) {
+            * { cursor: none !important; }
+        }
+        
+        @media (hover: none) or (pointer: coarse) {
+            /* Touch devices: Ensure system cursor is visible/standard */
+            * { cursor: auto !important; }
+        }
 
         body {
             background-color: var(--bg-dark);
@@ -28,7 +40,8 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            transition: background-color 0.1s;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         body.stress-mode {
@@ -44,7 +57,7 @@
         #custom-cursor {
             position: fixed;
             top: 0; left: 0;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.8);
             padding: 5px 10px;
             border: 1px solid var(--primary);
             color: var(--primary);
@@ -56,12 +69,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: width 0.2s, height 0.2s, border-radius 0.2s, font-size 0.2s;
+            transition: width 0.2s, height 0.2s, border-radius 0.2s, font-size 0.2s, opacity 0.2s;
             box-shadow: 0 0 10px var(--primary);
+            /* Hidden by default on touch via JS/CSS logic */
         }
 
         .cursor-shape-text { border-radius: 4px; }
-        .cursor-shape-circle { border-radius: 50%; width: 40px; height: 40px; font-size: 10px; text-align: center; }
+        .cursor-shape-circle { border-radius: 50%; width: 50px; height: 50px; font-size: 10px; text-align: center; }
         .cursor-shape-square { border-radius: 0; }
 
         .click-effect {
@@ -72,6 +86,7 @@
             color: var(--accent);
             z-index: 9999;
             font-weight: bold;
+            touch-action: none;
         }
 
         @keyframes floatUpFade {
@@ -82,23 +97,29 @@
         /* --- Header --- */
         header {
             background: rgba(20, 20, 31, 0.95);
-            padding: 1rem 2rem;
+            padding: 0.5rem 1rem;
             display: flex;
             justify-content: center;
             align-items: center;
             border-bottom: 2px solid #333;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             z-index: 10;
-            min-height: 100px;
+            min-height: 80px;
         }
 
         .big-rotating-title {
-            font-size: 2.5rem;
+            font-size: 1.5rem; /* Responsive base */
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 2px;
             animation: rgb-rotate-pulse 4s infinite linear;
             text-align: center;
+            line-height: 1.2;
+        }
+
+        @media (min-width: 768px) {
+            .big-rotating-title { font-size: 2.5rem; }
+            header { padding: 1rem 2rem; min-height: 100px; }
         }
 
         @keyframes rgb-rotate-pulse {
@@ -114,6 +135,7 @@
             display: flex;
             flex: 1;
             overflow: hidden;
+            flex-direction: row;
         }
 
         /* --- Sidebar --- */
@@ -127,21 +149,23 @@
             border-right: 1px solid #333;
             z-index: 5;
             overflow-y: auto;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
         }
 
         .nav-btn {
             background: transparent;
             border: 1px solid var(--primary);
             color: var(--primary);
-            padding: 12px 15px;
+            padding: 15px; /* Larger touch target */
             border-radius: 4px;
-            cursor: none;
             transition: 0.3s;
             text-align: left;
             font-weight: bold;
             display: flex;
             align-items: center;
             gap: 10px;
+            min-height: 44px; /* iOS HIG standard */
         }
         .nav-btn:hover, .nav-btn.active {
             background: var(--primary);
@@ -203,6 +227,7 @@
             overflow-y: auto;
             position: relative;
             background: radial-gradient(circle at center, #161922 0%, #0a0a10 100%);
+            -webkit-overflow-scrolling: touch; /* Smooth scroll iOS */
         }
 
         .section { display: none; height: 100%; padding: 2rem; padding-bottom: 150px; }
@@ -215,21 +240,22 @@
         .card h3 { color: var(--secondary); margin-bottom: 1rem; border-bottom: 1px solid #444; padding-bottom: 0.5rem; }
         label { display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; }
         input[type="range"], input[type="number"], select, input[type="color"], input[type="text"] {
-            width: 100%; padding: 8px; background: #0a0a10; border: 1px solid #444; color: white; border-radius: 4px;
+            width: 100%; padding: 12px; background: #0a0a10; border: 1px solid #444; color: white; border-radius: 4px;
+            font-size: 16px; /* Prevent iOS zoom */
         }
 
         /* --- Quiz Interface --- */
-        .quiz-hud { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .quiz-hud { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 10px; }
         .quiz-controls button {
-            background: #333; border: none; color: #fff; padding: 5px 15px;
-            cursor: none; border-radius: 4px; margin-left: 5px;
+            background: #333; border: none; color: #fff; padding: 10px 15px;
+            border-radius: 4px; margin-left: 5px;
         }
         .quiz-controls button:hover { background: #555; }
         .quiz-controls button.btn-end { background: var(--accent); }
 
         .big-timer-overlay {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 15rem; font-weight: 900; color: rgba(255, 255, 255, 0.05);
+            font-size: 15rem; font-weight: 900; color: rgba(255,255,255, 0.05);
             pointer-events: none; z-index: 0; transition: color 0.3s;
         }
         body.stress-mode .big-timer-overlay { color: rgba(255, 0, 85, 0.1); animation: pulse-text 0.5s infinite alternate; }
@@ -245,35 +271,37 @@
         .question-text { font-size: 1.4rem; max-height: 300px; overflow-y: auto; width: 100%; }
 
         .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; position: relative; z-index: 1; }
-
+        
         .option-btn {
             background: rgba(255,255,255,0.05); border: 2px solid #333; padding: 1.5rem;
-            color: white; font-size: 1.1rem; cursor: none; border-radius: 8px;
+            color: white; font-size: 1.1rem; border-radius: 8px;
             transition: 0.2s; text-align: left; position: relative; overflow: hidden;
+            min-height: 60px; /* Touch friendly */
         }
         .option-btn:hover { border-color: var(--primary); background: rgba(0, 243, 255, 0.05); }
         .option-btn.correct { background: rgba(0, 255, 136, 0.15); border-color: var(--success); }
         .option-btn.wrong { background: rgba(255, 0, 85, 0.15); border-color: var(--accent); animation: shake 0.4s; }
 
         .quiz-nav {
-            display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; position: relative; z-index: 1;
+            display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; position: relative; z-index: 1; flex-wrap: wrap;
         }
         .btn-nav {
             background: var(--panel-bg); border: 1px solid var(--primary); color: var(--primary);
-            padding: 10px 20px; border-radius: 4px; cursor: none; font-weight: bold;
+            padding: 12px 20px; border-radius: 4px; font-weight: bold;
+            flex: 1; /* Grow on mobile */
         }
         .btn-nav:hover { background: var(--primary); color: #000; }
 
         /* --- Aladdin Hint --- */
         #aladdin-container {
-            position: fixed; bottom: 140px; left: 20px;
+            position: fixed; bottom: 160px; left: 20px;
             display: flex; flex-direction: column; align-items: flex-start; z-index: 50;
-            pointer-events: none;
         }
         #aladdin-avatar {
             font-size: 3rem;
             animation: bounce 2s infinite ease-in-out;
-            cursor: none; pointer-events: auto;
+            cursor: pointer; pointer-events: auto;
+            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
         }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         
@@ -309,13 +337,13 @@
         .review-rat { color: var(--text-muted); font-style: italic; font-size: 0.9rem; margin-top: 0.5rem; border-top: 1px solid #333; padding-top: 0.5rem; }
 
         /* --- Flashcards --- */
-        .flashcard-container { perspective: 1000px; width: 100%; max-width: 600px; height: 400px; margin: 0 auto; cursor: none; }
+        .flashcard-container { perspective: 1000px; width: 100%; max-width: 600px; height: 400px; margin: 0 auto; }
         .flashcard-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
         .flashcard-inner.flipped { transform: rotateY(180deg); }
         .flashcard-front, .flashcard-back {
             position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 2rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--secondary);
+            padding: 2rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border:1px solid var(--secondary);
         }
         .flashcard-front { background: linear-gradient(135deg, #1a1d29, #252a3b); }
         .flashcard-back { background: linear-gradient(135deg, #252a3b, #1a1d29); transform: rotateY(180deg); border-color: var(--primary); }
@@ -347,43 +375,63 @@
         .modal-content {
             background: var(--panel-bg); padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%;
             text-align: center; border: 1px solid var(--primary); box-shadow: 0 0 50px rgba(0, 243, 255, 0.2);
+            max-height: 90vh; overflow-y: auto;
         }
         .btn-main {
             background: var(--primary); color: #000; border: none; padding: 12px 30px; font-size: 1.1rem;
-            font-weight: bold; border-radius: 50px; cursor: none; margin: 5px; transition: 0.3s;
+            font-weight: bold; border-radius: 50px; margin: 5px; transition: 0.3s; width: 100%; margin-bottom: 10px;
         }
         .btn-main:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--primary); }
         .btn-skip {
-            background: transparent; border: 2px solid var(--warning); color: var(--warning); padding: 8px 20px;
-            border-radius: 20px; cursor: none; font-weight: bold; margin-top: 1rem;
+            background: transparent; border: 2px solid var(--warning); color: var(--warning); padding: 12px 20px;
+            border-radius: 20px; font-weight: bold; margin-top: 1rem; width: auto;
         }
         .btn-skip:hover { background: var(--warning); color: #000; }
         .btn-danger { background: var(--accent); color: white; }
         .btn-danger:hover { background: #cc0044; }
 
-        /* Responsive */
-        @media (max-width: 768px) {
+        /* --- RESPONSIVE MEDIA QUERIES --- */
+        
+        /* Tablets Portrait & Mobile */
+        @media (max-width: 1024px) {
             .app-container { flex-direction: column; }
-            nav { width: 100%; height: auto; flex-direction: row; overflow-x: auto; padding: 0.5rem; border-bottom: 1px solid #333; border-right: none; flex-shrink: 0; }
-            .stats-panel { display: none; }
-            .options-grid { grid-template-columns: 1fr; }
+            nav { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #333; flex-direction: row; overflow-x: auto; padding: 0.5rem; order: 1; }
+            .stats-panel { display: none; } /* Simplify on tablet */
+            .nav-btn span { display: none; } /* Hide text on small tablet, show icons */
+            .nav-btn::after { content: attr(data-icon); } /* Ensure icon is shown */
+            main { order: 2; }
+        }
+
+        @media (max-width: 768px) {
             .big-timer-overlay { font-size: 8rem; }
-            #pet-game { width: 60px; height: 60px; }
-            #pet-canvas { width: 50px; height: 50px; }
-            .big-rotating-title { font-size: 1.5rem; }
+            .big-rotating-title { font-size: 1.2rem; }
+            #pet-game { width: 80px; height: 80px; }
+            #pet-canvas { width: 60px; height: 60px; }
             #aladdin-container { bottom: 90px; left: 10px; }
-            #custom-cursor { display: none; } * { cursor: auto; }
+            .question-text { font-size: 1.1rem; }
+            .options-grid { grid-template-columns: 1fr; }
+            
+            /* On mobile, show text in nav again but wrap */
+            .nav-btn { flex-direction: column; padding: 8px; justify-content: center; }
+            .nav-btn span { display: block; font-size: 0.8rem; }
+            
+            /* Hide custom cursor via CSS class addition in JS or media query */
+            #custom-cursor { display: none !important; }
         }
     </style>
 </head>
 <body>
 
+<!-- Custom Cursor (Hidden on touch devices via CSS) -->
 <div id="custom-cursor" class="cursor-shape-text">AMER ALSHARIF</div>
+
+<!-- Aladdin Hint -->
 <div id="aladdin-container">
     <div class="hint-bubble" id="hint-bubble">Think about the location...</div>
-    <div id="aladdin-avatar" onclick="app.giveHint()">🧞‍♂️</div>
+    <div id="aladdin-avatar" onclick="app.giveHint()" data-icon="🧞‍♂️">🧞‍♂️</div>
     <div style="color: var(--warning); font-size: 0.8rem; font-weight: bold; margin-top: 5px;">CLICK FOR HINT</div>
 </div>
+
 <canvas id="confetti-canvas"></canvas>
 
 <header>
@@ -392,9 +440,9 @@
 
 <div class="app-container">
     <nav>
-        <button class="nav-btn active" onclick="app.showSection('quiz-challenge')">⚔️ Quiz Challenge</button>
-        <button class="nav-btn" onclick="app.showSection('flashcards')">🃏 Flash Cards</button>
-        <button class="nav-btn" onclick="app.showSection('settings')">⚙️ Settings</button>
+        <button class="nav-btn active" onclick="app.showSection('quiz-challenge')" data-icon="⚔️"><span>⚔️ Quiz Challenge</span></button>
+        <button class="nav-btn" onclick="app.showSection('flashcards')" data-icon="🃏"><span>🃏 Flash Cards</span></button>
+        <button class="nav-btn" onclick="app.showSection('settings')" data-icon="⚙️"><span>⚙️ Settings</span></button>
         
         <div class="stats-panel">
             <div class="stat-text"><span>Level <span id="level-num">1</span></span> <span id="xp-text">0 XP</span></div>
@@ -445,7 +493,7 @@
                 <div class="card">
                     <h3>Text-to-Speech (TTS)</h3>
                     <label>Enable TTS</label>
-                    <input type="checkbox" id="tts-enable" checked style="width:auto;">
+                    <input type="checkbox" id="tts-enable" checked>
                     <br><br>
                     <label>Speech Rate</label>
                     <input type="range" id="tts-rate" min="0.5" max="2" step="0.1" value="1">
@@ -456,7 +504,7 @@
                 <div class="card">
                     <h3>Audio & SFX</h3>
                     <label>Sound Effects</label>
-                    <input type="checkbox" id="sfx-enable" checked style="width:auto;">
+                    <input type="checkbox" id="sfx-enable" checked>
                     <p style="font-size: 0.8rem; color: #666; margin-top:5px;">Enables dings and buzzers.</p>
                 </div>
             </div>
@@ -488,7 +536,7 @@
             
             <div class="quiz-nav">
                 <button class="btn-nav" onclick="app.navQuestion(-1)">Previous</button>
-                <button class="btn-skip" onclick="app.skipQuestion()" id="skip-btn" style="margin:0">Skip (-5 pts)</button>
+                <button class="btn-skip" onclick="app.skipQuestion()" id="skip-btn" style="margin:0; flex:0 0 auto;">Skip (-5 pts)</button>
                 <button class="btn-nav" onclick="app.navQuestion(1)">Next</button>
             </div>
         </section>
@@ -545,7 +593,7 @@
         <h2 id="modal-title">Quiz Complete</h2>
         <h1 id="modal-score" style="font-size: 3rem; color: var(--primary); margin: 1rem 0;">0</h1>
         <p id="modal-feedback" style="color: var(--text-muted);">Feedback text</p>
-        <div style="margin-top: 1.5rem;">
+        <div style="margin-top: 1.5rem; display: flex; flex-direction: column;">
             <button class="btn-main" onclick="app.showReview()">Review Questions</button>
             <button class="btn-main" onclick="app.startNewQuiz()">New Quiz</button>
             <button class="btn-main btn-danger" onclick="app.clearHistory()">Clear History</button>
@@ -555,9 +603,16 @@
 
 <script>
 /**
- * CUSTOM CURSOR & SETTINGS LOGIC
+ * PLATFORM DETECTION & CURSOR LOGIC
  */
+const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 const cursor = document.getElementById('custom-cursor');
+
+// Hide cursor logic on touch devices
+if (isTouchDevice) {
+    cursor.style.display = 'none';
+}
+
 const settings = {
     vis: document.getElementById('cursor-vis'),
     shape: document.getElementById('cursor-shape'),
@@ -568,13 +623,12 @@ const settings = {
 
 function updateCursorStyle() {
     const isVisible = settings.vis.value === 'visible';
-    cursor.style.display = isVisible ? 'flex' : 'none';
+    // Only show if not touch device AND setting is visible
+    cursor.style.display = (isVisible && !isTouchDevice) ? 'flex' : 'none';
     
-    // Reset classes
     cursor.className = '';
     cursor.classList.add(settings.shape.value);
     
-    // Styles
     cursor.style.fontSize = settings.size.value + 'px';
     cursor.style.color = settings.color.value;
     cursor.style.borderColor = settings.color.value;
@@ -582,36 +636,37 @@ function updateCursorStyle() {
     cursor.innerText = settings.text.value || 'AMER ALSHARIF';
 }
 
-// Event listeners for cursor
 [settings.vis, settings.shape, settings.size, settings.color, settings.text].forEach(el => {
     el.addEventListener('input', updateCursorStyle);
 });
 
-document.addEventListener('mousemove', (e) => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
-});
+if (!isTouchDevice) {
+    document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+    });
 
-document.addEventListener('click', (e) => {
-    const text = document.createElement('div');
-    text.className = 'click-effect';
-    text.innerText = settings.text.value;
-    text.style.left = e.clientX + 'px';
-    text.style.top = e.clientY + 'px';
-    document.body.appendChild(text);
+    document.addEventListener('click', (e) => {
+        const text = document.createElement('div');
+        text.className = 'click-effect';
+        text.innerText = settings.text.value;
+        text.style.left = e.clientX + 'px';
+        text.style.top = e.clientY + 'px';
+        document.body.appendChild(text);
 
-    for(let i=0; i<5; i++) {
-        const heart = document.createElement('div');
-        heart.className = 'click-effect';
-        heart.innerText = "❤️";
-        heart.style.left = (e.clientX + (Math.random() - 0.5) * 40) + 'px';
-        heart.style.top = (e.clientY + (Math.random() - 0.5) * 40) + 'px';
-        heart.style.color = `hsl(${Math.random()*360}, 100%, 70%)`;
-        document.body.appendChild(heart);
-        setTimeout(() => { if(heart.parentNode) heart.parentNode.removeChild(heart); }, 1500);
-    }
-    setTimeout(() => { if(text.parentNode) text.parentNode.removeChild(text); }, 1500);
-});
+        for(let i=0; i<5; i++) {
+            const heart = document.createElement('div');
+            heart.className = 'click-effect';
+            heart.innerText = "❤️";
+            heart.style.left = (e.clientX + (Math.random() - 0.5) * 40) + 'px';
+            heart.style.top = (e.clientY + (Math.random() - 0.5) * 40) + 'px';
+            heart.style.color = `hsl(${Math.random()*360}, 100%, 70%)`;
+            document.body.appendChild(heart);
+            setTimeout(() => { if(heart.parentNode) heart.parentNode.removeChild(heart); }, 1500);
+        }
+        setTimeout(() => { if(text.parentNode) text.parentNode.removeChild(text); }, 1500);
+    });
+}
 
 /**
  * AUDIO SYSTEM
@@ -644,21 +699,30 @@ class AudioController {
 }
 
 /**
- * CONFETTI SYSTEM
+ * CONFETTI SYSTEM (Cross-Platform Canvas)
  */
 class ConfettiSystem {
     constructor() {
         this.canvas = document.getElementById('confetti-canvas');
         this.ctx = this.canvas.getContext('2d');
-        this.particles = []; this.resize();
-        window.addEventListener('resize', () => this.resize()); this.animate();
+        this.particles = []; 
+        this.resize();
+        window.addEventListener('resize', () => this.resize()); 
+        this.animate();
     }
-    resize() { this.canvas.width = window.innerWidth; this.canvas.height = window.innerHeight; }
+    resize() {
+        const dpr = window.devicePixelRatio || 1;
+        this.canvas.width = window.innerWidth * dpr;
+        this.canvas.height = window.innerHeight * dpr;
+        this.ctx.scale(dpr, dpr);
+        this.canvas.style.width = window.innerWidth + 'px';
+        this.canvas.style.height = window.innerHeight + 'px';
+    }
     burst(x, y) {
         const colors = ['#00f3ff', '#bd00ff', '#ff0055', '#00ff88'];
         for (let i = 0; i < 50; i++) {
             this.particles.push({
-                x: x || this.canvas.width / 2, y: y || this.canvas.height / 2,
+                x: x || window.innerWidth / 2, y: y || window.innerHeight / 2,
                 vx: (Math.random() - 0.5) * 20, vy: (Math.random() - 0.5) * 20,
                 color: colors[Math.floor(Math.random() * colors.length)], life: 1, size: Math.random() * 5 + 2
             });
@@ -722,11 +786,11 @@ class Gamification {
     }
 }
 
-// --- GENERATING 165 QUESTIONS (Filling the array with valid medical assessment content) ---
+// --- GENERATING 165 QUESTIONS (Filling) ---
 const baseQuestions = [
     { q: "Dysphagia refers to:", a: "Difficulty swallowing", opts: ["Difficulty swallowing", "Heartburn", "Loss of appetite", "Vomiting blood"], r: "Dysphagia is defined as difficulty swallowing." },
-    { q: "Pyrosis (heartburn) is caused by:", a: "Reflux of gastric acid into esophagus and stomach", opts: ["Inflammation of liver", "Reflux of gastric acid into esophagus and stomach", "Appendicitis", "Spleen enlargement"], r: "Pyrosis results from the reflux of gastric acid." },
-    { q: "The liver is located in which quadrant?", a: "Right Upper Quadrant (RUQ)", opts: ["RUQ", "RLQ", "LUQ", "Midline"], r: "Anatomically, the liver resides in the Right Upper Quadrant." },
+    { q: "Pyrosis (heartburn) is caused by:", a: "Reflux of gastric acid into esophagus and stomach", opts: ["Inflammation of liver", "Reflux of gastric acid into esophagus and stomach", "Appendicitis", "Spleen enlargement"], r: "Pyrosis results from reflux of gastric acid." },
+    { q: "The liver is located in which quadrant?", a: "Right Upper Quadrant (RUQ)", opts: ["RUQ", "RLQ", "LUQ", "Midline"], r: "Anatomically, liver resides in the Right Upper Quadrant." },
     { q: "The appendix is located in which quadrant?", a: "Right Lower Quadrant (RLQ)", opts: ["RUQ", "RLQ", "LUQ", "Midline"], r: "The appendix is found in the Right Lower Quadrant." },
     { q: "The spleen is located in which quadrant?", a: "Left Upper Quadrant (LUQ)", opts: ["RUQ", "RLQ", "LUQ", "Midline"], r: "The spleen is situated in the Left Upper Quadrant." },
     { q: "The aorta is located:", a: "Midline", opts: ["RUQ", "RLQ", "LUQ", "Midline"], r: "The abdominal aorta runs midline." },
@@ -740,8 +804,8 @@ const baseQuestions = [
     { q: "Costovertebral angle (CVA) tenderness is assessed by:", a: "Indirect fist percussion over 12th rib at CVA", opts: ["Direct finger palpation", "Indirect fist percussion over 12th rib at CVA", "Deep palpation at midline", "Auscultation"], r: "CVA tenderness is checked by indirect fist percussion." },
     { q: "Deep palpation of the abdomen should be:", a: "5–8 cm", opts: ["2–3 cm", "5–8 cm", "10–12 cm", "Not recommended"], r: "Deep palpation typically reaches 5–8 cm." },
     { q: "Inspiratory Arrest (Murphy Sign) indicates:", a: "Inflammation of the gallbladder (cholecystitis)", opts: ["Normal liver function", "Inflammation of the gallbladder (cholecystitis)", "Spleen enlargement", "Appendicitis"], r: "Murphy's sign suggests acute cholecystitis." },
-    { q: "Nocturia in a patient with heart failure occurs because:", a: "Recumbency at night promotes fluid resorption and excretion", opts: ["Drinks more fluids at night", "Recumbency at night promotes fluid resorption and excretion", "Kidney function decreases at night", "Heart rate increases at night"], r: "Lying down allows peripheral fluid to return to circulation and be filtered by kidneys." },
-    { q: "When palpating the carotid arteries, you should:", a: "Palpate only one carotid artery at a time", opts: ["Palpate both simultaneously", "Palpate only one carotid artery at a time", "Avoid palpation completely", "Palpate lightly at the same time"], r: "Palpating both can compromise cerebral blood flow." },
+    { q: "Nocturia in a patient with heart failure occurs because:", a: "Recumbency at night promotes fluid resorption and excretion", opts: ["The person drinks more fluids at night", "Recumbency at night promotes fluid resorption and excretion", "Kidney function decreases at night", "Heart rate increases at night"], r: "Lying down allows peripheral fluid to return to circulation and be filtered by kidneys." },
+    { q: "When palpating the carotid arteries, you should:", a: "Palpate only one carotid artery at a time", opts: ["Palpate both arteries simultaneously", "Palpate only one carotid artery at a time", "Avoid palpation completely", "Palpate lightly at the same time"], r: "Palpating both can compromise cerebral blood flow." },
     { q: "The optimal position to inspect the jugular venous pulse is:", a: "Supine at 30–45 degrees", opts: ["Standing upright", "Supine at 0 degrees", "Supine at 30–45 degrees", "Sitting fully upright"], r: "30-45 degrees optimizes JVP visibility." },
     { q: "Normal jugular venous pulsation is:", a: "2 cm or less above the sternal angle", opts: ["1 cm above the sternal angle", "2 cm or less above the sternal angle", "3–4 cm above the sternal angle", "Not visible"], r: "JVP >3cm is elevated; normal is 2cm or less." },
     { q: "The aortic valve area is best auscultated at:", a: "Second right interspace", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Aortic area is the 2nd right intercostal space." },
@@ -752,7 +816,7 @@ const baseQuestions = [
     { q: "The second heart sound (S2) is caused by:", a: "Closure of the semilunar valves", opts: ["Closure of the semilunar valves", "Closure of the AV valves", "Ventricular filling", "Atrial contraction"], r: "S2 is the 'dub' caused by Aortic/Pulmonic valve closure." },
     { q: "To detect diastolic filling sounds, you should:", a: "Roll the patient toward their left side and use the bell at the apex", opts: ["Listen only in the supine position", "Roll the patient toward their left side and use the bell at the apex", "Listen with the diaphragm at the base", "Only palpate the apex"], r: "Left lateral decubitus position enhances S3/S4." },
     { q: "The modified Allen test is used to:", a: "Assess patency of radial and ulnar arteries and collateral circulation to the hand", opts: ["Measure blood pressure", "Assess patency of radial and ulnar arteries and collateral circulation to the hand", "Detect heart murmurs", "Evaluate venous return"], r: "Allen test checks ulnar artery patency before radial artery stick." },
-    { q: "Normal color return in the feet after comparison should be:", a: "10 seconds or less", opts: ["5 seconds or less", "10 seconds or less", "15 seconds or less", "20 seconds or less"], r: "Capillary refill should be brisk, usually < 2 seconds, definitely < 10s." },
+    { q: "Normal color return in the feet after compression should be:", a: "10 seconds or less", opts: ["5 seconds or less", "10 seconds or less", "15 seconds or less", "20 seconds or less"], r: "Capillary refill should be brisk, usually < 2 seconds, definitely < 10s." },
     { q: "A Doppler ultrasonic probe is used to:", a: "All of the above", opts: ["Detect a weak peripheral pulse", "Monitor blood pressure in infants or children", "Measure low blood pressure or blood pressure in a lower extremity", "All of the above"], r: "Doppler amplifies sound for weak pulses or BP measurement." },
     { q: "A thrill is:", a: "A palpable vibration that feels like the throat of a purring cat", opts: ["A type of heart sound heard with a stethoscope", "A palpable vibration that feels like the throat of a purring cat", "A normal finding in all adults", "A sign of weak pulses"], r: "A thrill is a palpable murmur." },
     { q: "Flexion is:", a: "Bending a limb at a joint", opts: ["Straightening a limb at a joint", "Bending a limb at a joint", "Moving a limb away from the midline", "Moving a limb toward the midline"], r: "Flexion decreases the angle of the joint." },
@@ -849,20 +913,18 @@ const baseQuestions = [
     { q: "Flexion: bending. Extension: straightening. Abduction:", a: "Away from midline", opts: ["Towards midline", "Away from midline", "Up", "Down"], r: "Abduction is moving away from midline." },
     { q: "Adduction: toward midline. Pronation: palm down. Supination:", a: "Palm up", opts: ["Palm down", "Palm up", "Palm side", "Palm forward"], r: "Supination is palm up." },
     { q: "Inversion: sole inward. Eversion: sole outward. Protraction:", a: "Forward parallel to ground", opts: ["Backward parallel to ground", "Forward parallel to ground", "Up", "Down"], r: "Protraction is forward parallel to ground." },
-    { q: "Retraction: backward parallel. Ballottement of the Patella is used to Detect large amounts of fluid in the knee.", a: "Detect large amounts of fluid in the knee", opts: ["Check bone fractures", "Detect large amounts of fluid in the knee", "Test ligaments", "Check nerve reflex"], r: "Ballottement detects large amounts of fluid in the knee." }
+    { q: "Retraction: backward parallel. Ballottement of Patella is used to Detect large amounts of fluid in the knee.", a: "Detect large amounts of fluid in the knee", opts: ["Check bone fractures", "Detect large amounts of fluid in the knee", "Test ligaments", "Check nerve reflex"], r: "Ballottement detects large amounts of fluid in the knee." }
 ];
 
-// Fill the array to 165 items by duplicating valid questions if necessary (to satisfy the count requirement without inventing false medical info)
+// Fill array to 165 items
 let questionBank = [...baseQuestions];
 while(questionBank.length < 165) {
-    // Add a copy of a random question from the base set
     const randomQ = baseQuestions[Math.floor(Math.random() * baseQuestions.length)];
-    // Create a new object to avoid reference issues
     questionBank.push({...randomQ});
 }
 
 /**
- * PET GAME LOGIC
+ * PET GAME LOGIC (High DPI Support)
  */
 class PetGame {
     constructor() {
@@ -873,7 +935,13 @@ class PetGame {
         this.state = 'IDLE'; this.pulseRate = 60; this.pulseColor = '#00ff88';
         window.addEventListener('resize', () => this.resize()); this.animate();
     }
-    resize() { this.canvas.width = this.canvas.parentElement.clientWidth; this.canvas.height = this.canvas.parentElement.clientHeight; }
+    resize() {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = this.canvas.parentElement.getBoundingClientRect();
+        this.canvas.width = rect.width * dpr;
+        this.canvas.height = rect.height * dpr;
+        this.ctx.scale(dpr, dpr);
+    }
     setState(newState) {
         this.state = newState;
         switch(newState) {
@@ -885,21 +953,42 @@ class PetGame {
         if(newState !== 'PANIC') setTimeout(() => { if(this.state === newState) this.setState('IDLE'); }, 1500);
     }
     draw() {
-        const ctx = this.ctx, cx = this.canvas.width / 2, cy = this.canvas.height / 2, time = Date.now() / 1000;
+        const ctx = this.ctx;
+        const rect = this.canvas.parentElement.getBoundingClientRect();
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        const time = Date.now() / 1000;
+        
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
         const beat = Math.sin(time * (this.pulseRate / 60) * Math.PI * 2);
         const scale = 1 + (beat > 0.8 ? beat * 0.2 : 0); 
-        ctx.fillStyle = this.pulseColor; ctx.beginPath(); ctx.arc(cx, cy, 20 * scale, 0, Math.PI * 2); ctx.fill();
-        ctx.shadowBlur = 20; ctx.shadowColor = this.pulseColor; ctx.stroke(); ctx.shadowBlur = 0;
-        ctx.strokeStyle = this.pulseColor; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, cy);
-        for(let x=0; x<this.canvas.width; x++) {
+        
+        ctx.fillStyle = this.pulseColor;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 20 * scale, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.shadowBlur = 20; ctx.shadowColor = this.pulseColor;
+        ctx.stroke(); ctx.shadowBlur = 0;
+        
+        ctx.strokeStyle = this.pulseColor;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, cy);
+        for(let x=0; x<rect.width; x++) {
             const relX = (x + Date.now() * (this.pulseRate/60)) % 200;
             let y = cy;
             if (relX > 140 && relX < 180) {
-                 if (relX < 145) y -= 5; else if (relX < 155) y += 15; else if (relX < 165) y -= 30; else y += 10; 
+                 if (relX < 145) y -= 5;
+                 else if (relX < 155) y += 15; 
+                 else if (relX < 165) y -= 30; 
+                 else y += 10; 
             }
             ctx.lineTo(x, y);
-        } ctx.stroke();
+        }
+        ctx.stroke();
+        
         ctx.fillStyle = '#0a0a10';
         if (this.state === 'PANIC') {
             ctx.beginPath(); ctx.arc(cx-7, cy-5, 4, 0, Math.PI*2); ctx.fill();
@@ -917,7 +1006,10 @@ class PetGame {
             ctx.beginPath(); ctx.arc(cx, cy+5, 5, 0, Math.PI, false); ctx.stroke();
         }
     }
-    animate() { this.draw(); requestAnimationFrame(() => this.animate()); }
+    animate() {
+        this.draw();
+        requestAnimationFrame(() => this.animate());
+    }
 }
 
 /**
@@ -931,7 +1023,7 @@ class QuizApp {
         this.gamification = new Gamification();
         this.synth = window.speechSynthesis;
         this.questions = [];
-        this.allQuizHistory = []; // Stores all questions with user answers for full review
+        this.allQuizHistory = []; 
         this.currentQIndex = 0;
         this.score = 0;
         this.streak = 0;
@@ -960,9 +1052,13 @@ class QuizApp {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        const index = id === 'quiz-challenge' ? 0 : id === 'flashcards' ? 1 : id === 'review-section' ? 0 : 2;
+        
+        // Responsive logic for nav highlighting
         if (id === 'review-section') document.querySelectorAll('.nav-btn')[0].classList.add('active'); 
-        else document.querySelectorAll('.nav-btn')[index].classList.add('active');
+        else if (id === 'quiz-challenge') document.querySelectorAll('.nav-btn')[0].classList.add('active');
+        else if (id === 'flashcards') document.querySelectorAll('.nav-btn')[1].classList.add('active');
+        else document.querySelectorAll('.nav-btn')[2].classList.add('active');
+
         if(id === 'flashcards') flashcardApp.init();
         if(id === 'quiz-challenge') document.getElementById('aladdin-container').style.display = 'flex';
         else document.getElementById('aladdin-container').style.display = 'none';
@@ -972,7 +1068,7 @@ class QuizApp {
         this.maxTime = parseInt(document.getElementById('q-time').value) || 30;
         this.audio.enabled = document.getElementById('sfx-enable').checked;
         this.questions = [...questionBank].sort(() => 0.5 - Math.random()).slice(0, count);
-        this.allQuizHistory = []; // Reset history
+        this.allQuizHistory = []; 
         this.currentQIndex = 0;
         this.score = 0;
         this.streak = 0;
@@ -1005,7 +1101,7 @@ class QuizApp {
         if(pct > 0.9) feedback = "Legendary Performance!";
         else if(pct > 0.7) feedback = "Excellent Work.";
         else if(pct > 0.5) feedback = "Good effort. Keep studying.";
-        else feedback = "Time to review the notes.";
+        else feedback = "Time to review notes.";
         document.getElementById('modal-feedback').innerText = feedback;
         this.ui.modal.classList.add('active');
         this.pet.setState('IDLE');
@@ -1021,7 +1117,7 @@ class QuizApp {
         const list = type === 'all' ? this.allQuizHistory : this.allQuizHistory.filter(i => !i.isCorrect);
         
         if(list.length === 0) {
-            this.ui.reviewContainer.innerHTML = '<div style="text-align:center; color: var(--text-muted);">No questions to review.</div>';
+            this.ui.reviewContainer.innerHTML = '<div style="text-align:center;">No questions to review.</div>';
             return;
         }
 
@@ -1051,7 +1147,6 @@ class QuizApp {
     giveHint() {
         if(this.isAnswering) return;
         const q = this.questions[this.currentQIndex];
-        // Simple hint: First letter and length
         const hint = `Think! It starts with "${q.a.charAt(0)}" and has ${q.a.length} letters.`;
         this.ui.hintBubble.innerText = hint;
         this.ui.hintBubble.classList.add('show');
@@ -1162,9 +1257,8 @@ class QuizApp {
         this.isAnswering = true;
         clearInterval(this.timer);
         
-        // Record History
-        this.allQuizHistory.push({
-            q: this.questions[this.currentQIndex],
+        this.allQuizHistory.push({ 
+            q: this.questions[this.currentQIndex], 
             userAnswer: "Skipped",
             isCorrect: false
         });
@@ -1190,9 +1284,8 @@ class QuizApp {
         this.streak = 0;
         this.ui.streak.innerText = this.streak;
 
-        // Record History
-        this.allQuizHistory.push({
-            q: this.questions[this.currentQIndex],
+        this.allQuizHistory.push({ 
+            q: this.questions[this.currentQIndex], 
             userAnswer: "Timed Out",
             isCorrect: false
         });
