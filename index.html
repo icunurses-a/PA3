@@ -1,1445 +1,782 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <!-- Optimized Viewport for Mobile/Tablet -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Final Physical Assessment</title>
-    <style>
-        :root {
-            --bg-dark: #0a0a10;
-            --panel-bg: #14141f;
-            --primary: #00f3ff;
-            --secondary: #bd00ff;
-            --accent: #ff0055;
-            --success: #00ff88;
-            --warning: #ffcc00;
-            --text-main: #e0e6ed;
-            --text-muted: #94a3b8;
-            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-        /* Hide default cursor on desktop */
-        @media (hover: hover) and (pointer: fine) {
-            * { cursor: none !important; }
-        }
-        @media (hover: none) or (pointer: coarse) {
-            * { cursor: auto !important; }
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: var(--font-main);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            padding-bottom: 80px; /* Space for bottom nav on mobile */
-        }
-
-        /* --- Header --- */
-        header {
-            background: rgba(20, 20, 31, 0.95);
-            padding: 0.5rem 1rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-bottom: 2px solid #333;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            z-index: 10;
-            min-height: 70px;
-            flex-shrink: 0;
-        }
-
-        .big-rotating-title {
-            font-size: 1.2rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            animation: rgb-rotate-pulse 4s infinite linear;
-            text-align: center;
-            line-height: 1.2;
-        }
-
-        @keyframes rgb-rotate-pulse {
-            0% { transform: rotate(-3deg) scale(1); color: #ff0000; text-shadow: 0 0 20px #ff0000; }
-            100% { transform: rotate(3deg) scale(1); color: #0000ff; text-shadow: 0 0 20px #0000ff; }
-        }
-
-        /* --- Main Layout --- */
-        .app-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* --- Desktop Sidebar --- */
-        .sidebar {
-            width: 260px;
-            background: var(--panel-bg);
-            display: flex;
-            flex-direction: column;
-            padding: 1rem;
-            gap: 1rem;
-            border-right: 1px solid #333;
-            z-index: 5;
-            overflow-y: auto;
-            transition: transform 0.3s ease;
-            height: 100%;
-        }
-
-        .nav-btn {
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 15px;
-            border-radius: 8px;
-            transition: 0.2s;
-            text-align: left;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 10px;
-            font-size: 1rem;
-            min-height: 48px; /* Touch target size */
-        }
-        .nav-btn:hover, .nav-btn.active {
-            background: var(--primary);
-            color: #000;
-            box-shadow: 0 0 15px var(--primary);
-        }
-
-        /* --- Mobile/Tablet Bottom Navigation --- */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: var(--panel-bg);
-            border-top: 1px solid #333;
-            display: none; /* Hidden by default on desktop */
-            justify-content: space-around;
-            align-items: center;
-            padding: 10px 0;
-            z-index: 50;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
-            height: 70px;
-        }
-
-        .bottom-nav .nav-btn {
-            flex-direction: column;
-            padding: 5px;
-            font-size: 0.8rem;
-            text-align: center;
-            justify-content: center;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            min-width: 60px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FINAL ASSESSMENT // SYSTEM: AMER_ALSHARIF</title>
+<style>
+    :root {
+        --hud-bg: #020617;
+        --hud-panel: rgba(15, 23, 42, 0.85);
+        --hud-border: #1e293b;
+        --holo-cyan: #06b6d4;
+        --holo-blue: #3b82f6;
+        --alert-red: #ef4444;
+        --success-green: #10b981;
+        --gold: #eab308;
+        --text-main: #e2e8f0;
+        --text-dim: #64748b;
         
-        .bottom-nav .nav-btn.active {
-            color: var(--primary);
-            background: rgba(0, 243, 255, 0.1);
-            border-radius: 8px;
-        }
-        
-        .bottom-nav .nav-btn:hover {
-            color: var(--text-main);
-        }
+        --scanline-color: rgba(6, 182, 212, 0.05);
+        --font-tech: 'Segoe UI', 'Courier New', monospace;
+    }
 
-        .bottom-nav .nav-icon {
-            font-size: 1.5rem;
-            display: block;
-            margin-bottom: 2px;
-        }
+    * { box-sizing: border-box; cursor: none; user-select: none; }
 
-        /* --- Stats Panel (Simplified for Easy Mode) --- */
-        .stats-panel {
-            margin-top: auto;
-            background: rgba(0,0,0,0.3);
-            padding: 1rem;
-            border-radius: 8px;
-        }
-        .xp-bar-container {
-            width: 100%;
-            height: 10px;
-            background: #333;
-            margin-bottom: 5px;
-            border-radius: 5px;
-            overflow: hidden;
-            display: none; /* Hidden in Simple Mode */
-        }
-        .simple-score-display {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--success);
-            text-align: center;
-            display: none; /* Hidden in XP Mode */
-        }
-        .xp-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            width: 0%;
-            transition: width 0.5s;
-        }
-        .stat-text { font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between; }
-        .badge-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin-top: 10px;
-        }
-        .badge {
-            width: 24px;
-            height: 24px;
-            background: #333;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            opacity: 0.3;
-            transition: 0.3s;
-        }
-        .badge.earned {
-            opacity: 1;
-            background: var(--warning);
-            color: #000;
-            box-shadow: 0 0 5px var(--warning);
-        }
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background-color: var(--hud-bg);
+        color: var(--text-main);
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
 
-        /* --- Main Content --- */
-        main {
-            flex: 1;
-            padding: 0;
-            overflow-y: auto;
-            position: relative;
-            background: radial-gradient(circle at center, #161922 0%, #0a0a10 100%);
-        }
+    /* --- BACKGROUND GRID EFFECT --- */
+    .grid-bg {
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        background-image: 
+            linear-gradient(to right, rgba(6, 182, 212, 0.1) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(6, 182, 212, 0.1) 1px, transparent 1px);
+        background-size: 40px 40px;
+        transform: perspective(500px) rotateX(20deg) scale(1.5);
+        transform-origin: top center;
+        z-index: -2;
+        animation: gridMove 20s linear infinite;
+        opacity: 0.3;
+        pointer-events: none;
+    }
+    
+    @keyframes gridMove {
+        0% { background-position: 0 0; }
+        100% { background-position: 0 40px; }
+    }
 
-        .section { display: none; height: 100%; padding: 2rem; padding-bottom: 150px; }
-        .section.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    /* Scanline Overlay */
+    .scanlines {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(to bottom, transparent 50%, var(--scanline-color) 51%);
+        background-size: 100% 4px;
+        z-index: 900;
+        pointer-events: none;
+    }
 
-        /* --- Settings --- */
-        .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 900px; margin: 0 auto; }
-        .card { background: var(--panel-bg); padding: 1.5rem; border-radius: 8px; border: 1px solid #333; }
-        .card h3 { color: var(--secondary); margin-bottom: 1rem; border-bottom: 1px solid #444; padding-bottom: 0.5rem; }
-        label { display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; }
-        input[type="range"], input[type="number"], select, input[type="color"], input[type="text"] {
-            width: 100%; padding: 12px; background: #0a0a10; border: 1px solid #444; color: white; border-radius: 4px; font-size: 16px;
-        }
+    /* --- CUSTOM CURSOR --- */
+    #cursor-dot {
+        width: 8px; height: 8px; background: var(--holo-cyan); border-radius: 50%;
+        position: fixed; z-index: 10001; pointer-events: none;
+        box-shadow: 0 0 10px var(--holo-cyan);
+    }
+    #cursor-ring {
+        width: 40px; height: 40px; border: 2px solid var(--holo-cyan); border-radius: 50%;
+        position: fixed; z-index: 10000; pointer-events: none;
+        transition: width 0.2s, height 0.2s;
+        transform: translate(-50%, -50%);
+        display: flex; align-items: center; justify-content: center;
+    }
+    #cursor-ring::after { content: ''; width: 4px; height: 4px; background: var(--holo-cyan); position: absolute; bottom: -6px; }
 
-        /* --- Quiz Interface --- */
-        .quiz-hud { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 10px; }
-        .quiz-controls button {
-            background: #333; border: none; color: #fff; padding: 10px 15px;
-            border-radius: 4px; margin-left: 5px;
-        }
-        .quiz-controls button:hover { background: #555; }
-        .quiz-controls button.btn-end { background: var(--accent); }
+    /* --- LAYOUT --- */
+    .hud-container {
+        width: 95%; max-width: 1400px;
+        display: grid; grid-template-columns: 1fr 350px;
+        gap: 30px; padding: 20px 0;
+        flex-grow: 1; z-index: 1;
+    }
 
-        .big-timer-overlay {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 15rem; font-weight: 900; color: rgba(255,255,255, 0.05);
-            pointer-events: none; z-index: 0; transition: color 0.3s;
-        }
-        body.stress-mode .big-timer-overlay { color: rgba(255, 0, 85, 0.1); animation: pulse-text 0.5s infinite alternate; }
-        @keyframes pulse-text { from { opacity: 0.5; } to { opacity: 0.8; } }
+    @media (max-width: 900px) { .hud-container { grid-template-columns: 1fr; } }
 
-        .question-box {
-            background: rgba(20, 20, 31, 0.8); backdrop-filter: blur(10px);
-            padding: 2rem; border-radius: 12px; min-height: 150px;
-            display: flex; align-items: center; justify-content: center; text-align: center;
-            margin-bottom: 2rem; border: 1px solid var(--primary);
-            box-shadow: 0 0 30px rgba(0, 243, 255, 0.05); position: relative; z-index: 1;
-        }
-        .question-text { font-size: 1.4rem; max-height: 300px; overflow-y: auto; width: 100%; }
+    /* --- HEADER --- */
+    header {
+        width: 100%; padding: 20px 40px;
+        display: flex; justify-content: space-between; align-items: center;
+        background: rgba(2, 6, 23, 0.9);
+        border-bottom: 2px solid var(--holo-blue);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+        z-index: 10;
+        clip-path: polygon(0 0, 100% 0, 100% 85%, 98% 100%, 2% 100%, 0 85%);
+    }
 
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; position: relative; z-index: 1; }
-        
-        .option-btn {
-            background: rgba(255,255,255,0.05); border: 2px solid #333; padding: 1.5rem;
-            color: white; font-size: 1.1rem; border-radius: 8px;
-            transition: 0.2s; text-align: left; position: relative; overflow: hidden;
-            min-height: 60px; /* Touch friendly */
-        }
-        .option-btn:hover { border-color: var(--primary); background: rgba(0, 243, 255, 0.05); }
-        .option-btn.correct { background: rgba(0, 255, 136, 0.15); border-color: var(--success); }
-        .option-btn.wrong { background: rgba(255, 0, 85, 0.15); border-color: var(--accent); animation: shake 0.4s; }
+    .brand-section { display: flex; flex-direction: column; }
+    .title-large {
+        font-family: var(--font-tech);
+        font-size: 2rem; font-weight: 900;
+        color: white; text-transform: uppercase; letter-spacing: 4px;
+        text-shadow: 0 0 10px var(--holo-cyan);
+    }
+    .sub-brand {
+        color: var(--holo-cyan); font-size: 0.9rem; letter-spacing: 2px; font-weight: bold;
+        display: flex; align-items: center; gap: 10px;
+    }
+    .status-dot { width: 8px; height: 8px; background: var(--success-green); border-radius: 50%; box-shadow: 0 0 8px var(--success-green); animation: blink 2s infinite; }
+    
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-        .quiz-nav {
-            display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; position: relative; z-index: 1; flex-wrap: wrap;
-        }
-        .btn-nav {
-            background: var(--panel-bg); border: 1px solid var(--primary); color: var(--primary);
-            padding: 12px 20px; border-radius: 4px; font-weight: bold;
-            flex: 1;
-        }
-        .btn-nav:hover { background: var(--primary); color: #000; }
+    /* --- PANELS (Tech Look) --- */
+    .tech-panel {
+        background: var(--hud-panel);
+        border: 1px solid var(--hud-border);
+        position: relative;
+        padding: 25px;
+        box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    }
+    
+    /* Decorative Corners */
+    .tech-panel::before {
+        content: ''; position: absolute; top: -1px; left: -1px; width: 20px; height: 20px;
+        border-top: 3px solid var(--holo-cyan); border-left: 3px solid var(--holo-cyan);
+    }
+    .tech-panel::after {
+        content: ''; position: absolute; bottom: -1px; right: -1px; width: 20px; height: 20px;
+        border-bottom: 3px solid var(--holo-cyan); border-right: 3px solid var(--holo-cyan);
+    }
 
-        /* --- Aladdin Hint --- */
-        #aladdin-container {
-            position: fixed; bottom: 160px; left: 20px;
-            display: flex; flex-direction: column; align-items: flex-start; z-index: 50;
-        }
-        #aladdin-avatar {
-            font-size: 3rem;
-            animation: bounce 2s infinite ease-in-out;
-            cursor: pointer; pointer-events: auto;
-            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
-        }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        
-        .hint-bubble {
-            background: var(--panel-bg); border: 1px solid var(--warning);
-            color: var(--text-main); padding: 10px 15px; border-radius: 15px;
-            margin-bottom: 5px; display: none; font-size: 0.9rem;
-            max-width: 200px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            pointer-events: none; opacity: 0; transition: opacity 0.3s;
-        }
-        .hint-bubble.show { display: block; opacity: 1; }
+    /* --- SIDEBAR --- */
+    .sidebar { display: flex; flex-direction: column; gap: 20px; }
+    
+    .data-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-family: var(--font-tech); font-size: 0.9rem; }
+    .data-val { color: var(--holo-cyan); font-weight: bold; }
 
-        /* --- Feedback Panel --- */
-        .feedback-panel {
-            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(150%);
-            width: 90%; max-width: 600px; background: var(--panel-bg);
-            border: 2px solid var(--primary); padding: 1.5rem; border-radius: 8px;
-            z-index: 20; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        }
-        .feedback-panel.show { transform: translateX(-50%) translateY(0); }
-        .feedback-title { font-weight: bold; font-size: 1.2rem; margin-bottom: 0.5rem; }
-        .rationale-text { color: var(--text-muted); line-height: 1.5; }
+    /* XP BAR */
+    .xp-track { width: 100%; height: 6px; background: #0f172a; border: 1px solid var(--hud-border); margin-top: 5px; }
+    .xp-bar { height: 100%; background: var(--gold); width: 0%; box-shadow: 0 0 10px var(--gold); transition: width 0.5s; }
 
-        /* --- Review Section --- */
-        .review-list { max-width: 800px; margin: 0 auto; }
-        .review-item { background: var(--panel-bg); border: 1px solid #444; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
-        .review-q { font-weight: bold; color: white; margin-bottom: 0.5rem; }
-        .review-stat { margin-bottom: 0.5rem; font-size: 0.9rem; }
-        .review-correct-text { color: var(--success); }
-        .review-wrong-text { color: var(--accent); }
-        .review-ans-text { color: var(--primary); }
-        .review-rat { color: var(--text-muted); font-style: italic; font-size: 0.9rem; margin-top: 0.5rem; border-top: 1px solid #333; padding-top: 0.5rem; }
+    /* PET HOLOGRAM */
+    #pet-container {
+        width: 160px; height: 160px; margin: 0 auto;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%);
+        border: 1px dashed var(--holo-cyan);
+        display: flex; align-items: center; justify-content: center;
+        position: relative;
+    }
+    #pet-container::before {
+        content: ''; position: absolute; width: 100%; height: 100%;
+        border-radius: 50%; border-top: 2px solid var(--holo-cyan); border-bottom: 2px solid var(--holo-cyan);
+        animation: spin 4s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- Flashcards --- */
-        .flashcard-container { perspective: 1000px; width: 100%; max-width: 600px; height: 400px; margin: 0 auto; }
-        .flashcard-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
-        .flashcard-inner.flipped { transform: rotateY(180deg); }
-        .flashcard-front, .flashcard-back {
-            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 2rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border:1px solid var(--secondary);
-        }
-        .flashcard-front { background: linear-gradient(135deg, #1a1d29, #252a3b); }
-        .flashcard-back { background: linear-gradient(135deg, #252a3b, #1a1d29); transform: rotateY(180deg); border-color: var(--primary); }
-        .flash-controls { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; position: relative; z-index: 1;}
+    /* --- MENU BUTTONS (Angled) --- */
+    .grid-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; width: 100%; }
 
-        /* --- Canvas --- */
-        #confetti-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 100; }
+    .tech-btn {
+        background: rgba(6, 182, 212, 0.1);
+        border: 1px solid var(--holo-cyan);
+        color: var(--holo-cyan);
+        padding: 20px;
+        font-family: var(--font-tech);
+        font-size: 1.1rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        cursor: none;
+        position: relative;
+        transition: 0.3s;
+        clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    }
+    .tech-btn:hover {
+        background: var(--holo-cyan);
+        color: #000;
+        box-shadow: 0 0 20px var(--holo-cyan);
+        transform: translateY(-2px);
+    }
+    .tech-btn.danger { border-color: var(--alert-red); color: var(--alert-red); background: rgba(239, 68, 68, 0.1); }
+    .tech-btn.danger:hover { background: var(--alert-red); color: white; box-shadow: 0 0 20px var(--alert-red); }
 
-        /* --- Pet --- */
-        #pet-game {
-            position: fixed; bottom: 20px; right: 20px; width: 120px; height: 120px;
-            background: rgba(20, 20, 31, 0.9); border: 2px solid var(--success);
-            border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8); z-index: 50;
-        }
-        #pet-canvas { width: 100px; height: 100px; }
-        .pet-status {
-            position: absolute; bottom: -25px; width: 150px; text-align: center;
-            font-size: 0.8rem; color: var(--text-muted); left: -15px;
-        }
+    /* --- QUESTION UI --- */
+    .q-display { font-size: 1.4rem; line-height: 1.6; margin-bottom: 30px; border-left: 4px solid var(--holo-cyan); padding-left: 20px; }
+    
+    .opt-btn {
+        width: 100%; padding: 15px 20px; margin-bottom: 12px;
+        background: transparent;
+        border: 1px solid var(--hud-border);
+        border-left: 4px solid var(--hud-border);
+        color: var(--text-dim);
+        font-size: 1rem;
+        text-align: left;
+        transition: 0.2s;
+        display: flex; align-items: center;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    .opt-btn:hover:not(:disabled) {
+        border-color: var(--holo-cyan);
+        border-left-color: var(--holo-cyan);
+        background: rgba(6, 182, 212, 0.05);
+        color: white;
+        padding-left: 30px;
+    }
+    .opt-btn.correct { border-color: var(--success-green); background: rgba(16, 185, 129, 0.1); color: var(--success-green); }
+    .opt-btn.wrong { border-color: var(--alert-red); background: rgba(239, 68, 68, 0.1); color: var(--alert-red); opacity: 0.6; }
+    .opt-btn.dimmed { opacity: 0.1; pointer-events: none; border: none; }
 
-        /* --- Modals --- */
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center;
-            z-index: 200; backdrop-filter: blur(5px);
-        }
-        .modal.active { display: flex; }
-        .modal-content {
-            background: var(--panel-bg); padding: 2rem; border-radius: 12px; max-width: 500px; width: 90%;
-            text-align: center; border: 1px solid var(--primary); box-shadow: 0 0 50px rgba(0, 243, 255, 0.2);
-            max-height: 90vh; overflow-y: auto;
-        }
-        .btn-main {
-            background: var(--primary); color: #000; border: none; padding: 12px 30px; font-size: 1.1rem;
-            font-weight: bold; border-radius: 50px; margin: 5px; transition: 0.3s; width: 100%; margin-bottom: 10px;
-        }
-        .btn-main:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--primary); }
-        .btn-skip {
-            background: transparent; border: 2px solid var(--warning); color: var(--warning); padding: 12px 20px;
-            border-radius: 20px; font-weight: bold; margin-top: 1rem; width: auto;
-        }
-        .btn-skip:hover { background: var(--warning); color: #000; }
-        .btn-danger { background: var(--accent); color: white; }
-        .btn-danger:hover { background: #cc0044; }
+    /* --- ALADDIN / MAGIC --- */
+    .clue-box {
+        position: absolute; bottom: 20px; right: 20px;
+        background: rgba(0,0,0,0.9); border: 1px solid var(--gold);
+        color: var(--gold); padding: 15px; border-radius: 5px;
+        max-width: 300px; display: none; z-index: 50;
+        box-shadow: 0 0 20px rgba(234, 179, 8, 0.3);
+    }
 
-        /* --- RESPONSIVE BREAKPOINTS --- */
-        
-        /* Tablet (Portrait) & Mobile: Use Bottom Nav */
-        @media (max-width: 1024px) {
-            .sidebar { display: none; }
-            .bottom-nav { display: flex; }
-            .big-timer-overlay { font-size: 8rem; }
-            .big-rotating-title { font-size: 1rem; }
-            #pet-game { width: 80px; height: 80px; }
-            #pet-canvas { width: 60px; height: 60px; }
-            #aladdin-container { bottom: 90px; left: 10px; }
-            
-            /* Simple Score Mode Layout */
-            .simple-score-display { display: block; font-size: 2.5rem; color: var(--primary); }
-            .xp-bar-container, .badge-grid, .stat-text { display: none; } /* Hide complex stats */
-        }
+    /* --- CONFETTI --- */
+    #confetti-c { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
 
-        /* Desktop: Use Sidebar */
-        @media (min-width: 1025px) {
-            .bottom-nav { display: none; }
-            .sidebar { display: flex; }
-            
-            /* XP Mode Layout (Default on desktop) */
-            .simple-score-display { display: none; }
-            .xp-bar-container, .badge-grid, .stat-text { display: block; }
-        }
+    /* --- BADGES --- */
+    .badge-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+    .badge-slot {
+        width: 40px; height: 40px; background: rgba(255,255,255,0.05);
+        border: 1px solid var(--hud-border);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem; color: var(--text-dim);
+        transition: 0.3s;
+    }
+    .badge-slot.unlocked {
+        border-color: var(--gold); color: var(--gold);
+        box-shadow: 0 0 10px rgba(234, 179, 8, 0.3);
+        transform: scale(1.1);
+    }
 
-        /* Hide custom cursor on touch via JS logic but ensure css backup */
-        @media (max-width: 768px) {
-            .options-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+    /* SETTINGS INPUTS */
+    select, input {
+        background: #020617; border: 1px solid var(--holo-blue); color: var(--holo-cyan);
+        padding: 5px; font-family: var(--font-tech); width: 100%; margin-top: 5px;
+    }
+</style>
 </head>
 <body>
 
-<!-- Custom Cursor -->
-<div id="custom-cursor" class="cursor-shape-text">AMER ALSHARIF</div>
+<div class="grid-bg"></div>
+<div class="scanlines"></div>
+<canvas id="confetti-c"></canvas>
 
-<!-- Aladdin Hint -->
-<div id="aladdin-container">
-    <div class="hint-bubble" id="hint-bubble">Think about location...</div>
-    <div id="aladdin-avatar" onclick="app.giveHint()">🧞‍♂️</div>
-    <div style="color: var(--warning); font-size: 0.8rem; font-weight: bold; margin-top: 5px;">CLICK FOR HINT</div>
-</div>
-
-<canvas id="confetti-canvas"></canvas>
+<!-- CURSOR -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
 
 <header>
-    <div class="big-rotating-title">Final Physical Assessment</div>
+    <div class="brand-section">
+        <div class="sub-brand">
+            <div class="status-dot"></div> SYSTEM ONLINE
+        </div>
+        <div class="title-large">FINAL <span style="color:var(--holo-cyan)">ASSESSMENT</span></div>
+        <div style="font-size:0.8rem; color:var(--text-dim); letter-spacing:3px;">USER: AMER ALSHARIF</div>
+    </div>
+    <div>
+        <button onclick="toggleFullScreen()" class="tech-btn" style="padding:10px 20px; font-size:0.8rem;">[ ] FULLSCREEN</button>
+    </div>
 </header>
 
-<div class="app-container">
-    <!-- Desktop Sidebar -->
-    <nav class="sidebar">
-        <button class="nav-btn active" onclick="app.showSection('quiz-challenge')">⚔️ <span>Quiz Challenge</span></button>
-        <button class="nav-btn" onclick="app.showSection('flashcards')">🃏 <span>Flash Cards</span></button>
-        <button class="nav-btn" onclick="app.showSection('settings')">⚙️ <span>Settings</span></button>
-        
-        <div class="stats-panel">
-            <div class="stat-text"><span>Level <span id="level-num">1</span></span> <span id="xp-text">0 XP</span></div>
-            <div class="xp-bar-container"><div class="xp-bar-fill" id="xp-fill"></div></div>
-            <div class="badge-grid" id="badge-container"></div>
-        </div>
-    </nav>
-
-    <!-- Mobile/Tablet Bottom Navigation -->
-    <div class="bottom-nav">
-        <button class="nav-btn active" onclick="app.showSection('quiz-challenge')">
-            <div class="nav-icon">⚔️</div>
-            <div>Quiz</div>
-        </button>
-        <button class="nav-btn" onclick="app.showSection('flashcards')">
-            <div class="nav-icon">🃏</div>
-            <div>Cards</div>
-        </button>
-        <button class="nav-btn" onclick="app.showSection('settings')">
-            <div class="nav-icon">⚙️</div>
-            <div>Set</div>
-        </button>
-    </div>
-
-    <main>
-        <!-- Settings Section -->
-        <section id="settings" class="section">
-            <h2>Configuration</h2>
-            <br>
-            <div class="settings-grid">
-                <div class="card">
-                    <h3>Quiz Setup</h3>
-                    <label>Number of Questions (Max 165)</label>
-                    <input type="number" id="q-count" value="20" min="5" max="165">
-                    <br><br>
-                    <label>Time per Question (sec)</label>
-                    <input type="range" id="q-time" min="15" max="120" value="30" oninput="document.getElementById('time-val').innerText = this.value + 's'">
-                    <div style="text-align: right; color: var(--primary);" id="time-val">30s</div>
-                </div>
-                <div class="card">
-                    <h3>Scoring Mode</h3>
-                    <label>Easy Scoring (Simple Points)</label>
-                    <input type="checkbox" id="simple-scoring" style="width:auto; transform: scale(1.5); margin-bottom: 1rem;" onchange="app.toggleScoringMode()">
-                    <p style="font-size: 0.8rem; color: var(--text-muted);">Check this for simple points instead of XP/Badges.</p>
-                </div>
-                <div class="card">
-                    <h3>Cursor Customization</h3>
-                    <label>Visibility</label>
-                    <select id="cursor-vis">
-                        <option value="visible">Visible</option>
-                        <option value="invisible">Invisible</option>
-                    </select>
-                    <br><br>
-                    <label>Shape</label>
-                    <select id="cursor-shape">
-                        <option value="cursor-shape-text">Text Box</option>
-                        <option value="cursor-shape-circle">Circle</option>
-                        <option value="cursor-shape-square">Square</option>
-                    </select>
-                    <br><br>
-                    <label>Size (px)</label>
-                    <input type="number" id="cursor-size" value="14" min="10" max="40">
-                    <br><br>
-                    <label>Text Color</label>
-                    <input type="color" id="cursor-color" value="#00f3ff">
-                    <br><br>
-                    <label>Custom Text</label>
-                    <input type="text" id="cursor-text" value="AMER ALSHARIF">
-                </div>
-                <div class="card">
-                    <h3>Text-to-Speech (TTS)</h3>
-                    <label>Enable TTS</label>
-                    <input type="checkbox" id="tts-enable" checked style="width:auto;">
-                    <br><br>
-                    <label>Speech Rate</label>
-                    <input type="range" id="tts-rate" min="0.5" max="2" step="0.1" value="1">
-                    <br><br>
-                    <label>Speech Pitch</label>
-                    <input type="range" id="tts-pitch" min="0" max="2" step="0.1" value="1">
-                </div>
-                <div class="card">
-                    <h3>Audio & SFX</h3>
-                    <label>Sound Effects</label>
-                    <input type="checkbox" id="sfx-enable" checked style="width:auto;">
-                    <p style="font-size: 0.8rem; color: #666; margin-top:5px;">Enables dings and buzzers.</p>
-                </div>
-            </div>
-            <div style="text-align:center; margin-top:2rem;">
-                <button class="btn-main" onclick="app.initQuiz()">Start Challenge</button>
-            </div>
-        </section>
-
-        <!-- Quiz Section -->
-        <section id="quiz-challenge" class="section">
-            <!-- Simple Score Display (Hidden by default on desktop) -->
-            <div class="simple-score-display" id="simple-score-display">Score: 0</div>
-
-            <div class="quiz-hud" id="xp-hud">
-                <div>Score: <span id="score" style="color:var(--success); font-weight:bold;">0</span> | Streak: <span id="streak" style="color:var(--warning); font-weight:bold;">0</span></div>
-                <div class="quiz-controls">
-                    <button onclick="app.endQuiz()" class="btn-end">End Quiz</button>
-                </div>
-            </div>
-            
-            <div style="text-align:center; margin-bottom:1rem; color:var(--text-muted);">
-                Question <span id="q-current">1</span>/<span id="q-total">20</span>
-            </div>
-
-            <div class="big-timer-overlay" id="big-timer">30</div>
-
-            <div class="question-box">
-                <div class="question-text" id="question-text">Initializing...</div>
-            </div>
-
-            <div class="options-grid" id="options-container"></div>
-            
-            <div class="quiz-nav">
-                <button class="btn-nav" onclick="app.navQuestion(-1)">Previous</button>
-                <button class="btn-skip" onclick="app.skipQuestion()" id="skip-btn" style="margin:0; flex: 0 0 auto;">Skip (-5 pts)</button>
-                <button class="btn-nav" onclick="app.navQuestion(1)">Next</button>
-            </div>
-        </section>
-
-        <!-- Review Section -->
-        <section id="review-section" class="section">
-            <h2 style="text-align:center; color: var(--primary); margin-bottom: 2rem;">Full Review</h2>
-            <div style="text-align:center; margin-bottom:1rem;">
-                <button class="btn-main" onclick="app.filterReview('all')" style="font-size:0.9rem; padding:8px 15px;">All Questions</button>
-                <button class="btn-main" onclick="app.filterReview('missed')" style="font-size:0.9rem; padding:8px 15px; background:var(--accent);">Mistakes Only</button>
-            </div>
-            <div id="review-container" class="review-list"></div>
-            <div style="text-align:center; margin-top: 2rem;">
-                <button class="btn-main" onclick="app.showSection('settings')">Back to Menu</button>
-            </div>
-        </section>
-
-        <!-- Flashcard Section -->
-        <section id="flashcards" class="section">
-            <div class="flashcard-container" onclick="this.querySelector('.flashcard-inner').classList.toggle('flipped')">
-                <div class="flashcard-inner">
-                    <div class="flashcard-front">
-                        <h3 id="fc-term">Term</h3>
-                        <p style="margin-top:1rem; color:var(--text-muted); font-size:0.9rem">(Tap to flip)</p>
-                    </div>
-                    <div class="flashcard-back">
-                        <p id="fc-def" style="font-size:1.2rem; line-height:1.6;">Definition</p>
-                    </div>
-                </div>
-            </div>
-            <div class="flash-controls">
-                <button class="nav-btn" onclick="flashcardApp.prev()">Previous</button>
-                <button class="nav-btn" onclick="flashcardApp.next()">Next</button>
-            </div>
-        </section>
+<div class="hud-container">
+    
+    <!-- MAIN INTERFACE -->
+    <main class="tech-panel" id="app-area" style="display:flex; flex-direction:column; justify-content:center;">
+        <!-- Content injected here -->
     </main>
-</div>
 
-<!-- Pet Game Widget -->
-<div id="pet-game">
-    <canvas id="pet-canvas"></canvas>
-    <div class="pet-status" id="pet-msg">READY</div>
-</div>
-
-<!-- Rationale Feedback Panel -->
-<div class="feedback-panel" id="feedback-panel">
-    <div class="feedback-title" id="fb-title">Correct!</div>
-    <div class="rationale-text" id="fb-text">Explanation goes here.</div>
-</div>
-
-<!-- Modal for Results -->
-<div class="modal" id="result-modal">
-    <div class="modal-content">
-        <h2 id="modal-title">Quiz Complete</h2>
-        <h1 id="modal-score" style="font-size: 3rem; color: var(--primary); margin: 1rem 0;">0</h1>
-        <p id="modal-feedback" style="color: var(--text-muted);">Feedback text</p>
-        <div style="margin-top: 1.5rem; display: flex; flex-direction: column;">
-            <button class="btn-main" onclick="app.showReview()">Review Questions</button>
-            <button class="btn-main" onclick="app.startNewQuiz()">New Quiz</button>
-            <button class="btn-main btn-danger" onclick="app.clearHistory()">Clear History</button>
+    <!-- SIDEBAR DIAGNOSTICS -->
+    <aside class="sidebar">
+        
+        <!-- PLAYER STATS -->
+        <div class="tech-panel">
+            <div style="color:var(--holo-blue); font-weight:bold; margin-bottom:15px; border-bottom:1px solid var(--hud-border); padding-bottom:5px;">USER STATISTICS</div>
+            <div class="data-row"><span>LEVEL</span> <span class="data-val" id="level-num">1</span></div>
+            <div class="data-row"><span>EXP POINTS</span> <span class="data-val" id="xp-num">0</span></div>
+            <div class="xp-track"><div class="xp-bar" id="xp-fill"></div></div>
+            
+            <div style="margin-top:15px; color:var(--text-dim); font-size:0.8rem;">ACHIEVEMENTS</div>
+            <div class="badge-grid" id="badge-area"></div>
         </div>
-    </div>
+
+        <!-- AI CORE (PET) -->
+        <div class="tech-panel" style="text-align:center;">
+            <div style="color:var(--holo-blue); font-weight:bold; margin-bottom:15px;">AI ASSISTANT CORE</div>
+            <div id="pet-container">
+                <canvas id="pet-canvas" width="140" height="140"></canvas>
+            </div>
+            <div style="color:var(--holo-cyan); margin-top:10px; font-weight:bold; letter-spacing:2px;" id="pet-mood">STANDBY</div>
+            <div style="color:var(--text-dim); font-size:0.8rem; font-style:italic; margin-top:5px;" id="pet-speech">"Awaiting input..."</div>
+        </div>
+
+        <!-- SYSTEM CONFIG -->
+        <div class="tech-panel">
+            <div style="color:var(--holo-blue); font-weight:bold; margin-bottom:15px;">SYSTEM CONFIG</div>
+            <label style="display:flex; align-items:center; color:var(--text-dim); font-size:0.9rem; cursor:none;">
+                <input type="checkbox" id="tts-toggle" style="width:auto; margin-right:10px;"> VOCAL SYNTHESIS (TTS)
+            </label>
+            <button onclick="resetData()" class="tech-btn danger" style="width:100%; margin-top:15px; font-size:0.8rem; padding:10px;">RESET DATABASE</button>
+        </div>
+
+    </aside>
 </div>
 
 <script>
-/**
- * PLATFORM DETECTION & CURSOR LOGIC
- */
-const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-const cursor = document.getElementById('custom-cursor');
+    /**
+     * --- CORE DATA (130 QUESTIONS) ---
+     */
+    const rawData = [
+         {id: 1, q: "Who is responsible for the loss of skin color?", a: "Melanin", opts: ["Keratin", "Hemoglobin", "Bilirubin"]},
+        {id: 2, q: "What term describes the loss of skin color?", a: "Hypopigmentation", opts: ["Hyperpigmentation", "Erythema", "Cyanosis"]},
+        {id: 3, q: "What term describes an increase in skin color?", a: "Hyperpigmentation", opts: ["Hypopigmentation", "Vitiligo", "Pallor"]},
+        {id: 4, q: "What is the medical term for dry skin?", a: "Xerosis", opts: ["Seborrhea", "Pruritus", "Edema"]},
+        {id: 5, q: "What is the medical term for oily skin?", a: "Seborrhea", opts: ["Xerosis", "Alopecia", "Hirsutism"]},
+        {id: 6, q: "A significant loss of hair or a full head of hair is called:", a: "Alopecia", opts: ["Hirsutism", "Seborrhea", "Vitiligo"]},
+        {id: 7, q: "Shaggy or excessive hair growth is called:", a: "Hirsutism", opts: ["Alopecia", "Xerosis", "Clubbing"]},
+        {id: 8, q: "Hirsutism is often caused by abnormalities in which system?", a: "Endocrine", opts: ["Cardiovascular", "Respiratory", "Digestive"]},
+        {id: 9, q: "The complete absence of melanin pigment in patchy areas is:", a: "Vitiligo", opts: ["Albinism", "Erythema", "Jaundice"]},
+        {id: 10, q: "A clump of melanocytes is commonly known as a:", a: "Mole (Nevus)", opts: ["Freckle", "Pustule", "Cyst"]},
+        {id: 11, q: "Hyperemia in dilated superficial capillaries causing redness is:", a: "Erythema", opts: ["Cyanosis", "Jaundice", "Pallor"]},
+        {id: 12, q: "A bluish mottled color, often seen in the lips, indicating poor perfusion is:", a: "Cyanosis", opts: ["Erythema", "Jaundice", "Rubor"]},
+        {id: 13, q: "Generalized coolness of the skin is termed:", a: "Hypothermia", opts: ["Hyperthermia", "Fever", "Pyrexia"]},
+        {id: 14, q: "Condition occurring when metabolic rate increases causing warmth:", a: "Hyperthermia", opts: ["Hypothermia", "Cyanosis", "Xerosis"]},
+        {id: 15, q: "Which two conditions are assessed by inspecting skin moisture?", a: "Diaphoresis and Dehydration", opts: ["Color and Tone", "Lesions and Masses", "Vascularity and Bruising"]},
+        {id: 16, q: "Normal skin texture should feel:", a: "Smooth and firm", opts: ["Rough and dry", "Soft and boggy", "Hard and immobile"]},
+        {id: 17, q: "What is the normal angle of the nail base?", a: "160 degrees", opts: ["180 degrees", "90 degrees", "120 degrees"]},
+        {id: 18, q: "Nail clubbing is indicated when the nail angle is:", a: "Greater than 180 degrees", opts: ["Less than 160 degrees", "Exactly 90 degrees", "Flat"]},
+        {id: 19, q: "Clubbing of the nails is associated with:", a: "Heart disease, lung cancer, pulmonary disease", opts: ["Liver failure", "Kidney stones", "Skin infections"]},
+        {id: 20, q: "Cherry angiomas are characterized as:", a: "Small bright red raised dots", opts: ["Blue nodules", "Large painful lesions", "Flat brown patches"]},
+        {id: 21, q: "A junctional nevus is typically:", a: "Flat and common in children", opts: ["Raised and common in adults", "Always malignant", "Blue in color"]},
+        {id: 22, q: "Jaundice indicates increased levels of:", a: "Bilirubin", opts: ["Melanin", "Hemoglobin", "Oxygen"]},
+        {id: 23, q: "Edema represents an accumulation of:", a: "Fluid in interstitial space", opts: ["Blood in vessels", "Fat in tissue", "Air in lungs"]},
+        {id: 24, q: "Lymphadenopathy is defined as lymph node enlargement greater than:", a: "1 cm", opts: ["0.5 cm", "3 cm", "5 cm"]},
+        {id: 25, q: "The trachea should normally be located:", a: "Midline", opts: ["Deviated to the right", "Deviated to the left", "Posterior to esophagus"]},
+        {id: 26, q: "To inspect the thyroid, ask the patient to:", a: "Drink sips of water", opts: ["Hold their breath", "Cough forcefully", "Turn head side to side"]},
+        {id: 27, q: "A normal adult thyroid gland:", a: "Cannot be palpated", opts: ["Is easily palpable", "Is tender to touch", "Is visible on inspection"]},
+        {id: 28, q: "If the thyroid is palpated and feels hard, it may indicate:", a: "Cancer", opts: ["Infection", "Hyperthyroidism", "Normal finding"]},
+        {id: 29, q: "If the thyroid is enlarged, what should you auscultate for?", a: "Bruit", opts: ["Crackles", "Wheeze", "Murmur"]},
+        {id: 30, q: "When auscultating for a thyroid bruit, use the:", a: "Bell of the stethoscope", opts: ["Diaphragm of the stethoscope", "Neither", "Both"]},
+        {id: 31, q: "Difficulty breathing is termed:", a: "Dyspnea", opts: ["Apnea", "Eupnea", "Bradypnea"]},
+        {id: 32, q: "Difficulty breathing when lying supine is called:", a: "Orthopnea", opts: ["Dyspnea", "Paroxysmal Nocturnal Dyspnea", "Tachypnea"]},
+        {id: 33, q: "What is the correct sequence for a respiratory examination?", a: "Inspection, Palpation, Percussion, Auscultation", opts: ["Inspection, Auscultation, Percussion, Palpation", "Palpation, Inspection, Percussion, Auscultation", "Auscultation, Inspection, Palpation, Percussion"]},
+        {id: 34, q: "The normal AP-to-transverse diameter ratio is:", a: "0.70 to 0.75", opts: ["1.0", "0.50 to 0.55", "2.0"]},
+        {id: 35, q: "A chest where AP diameter equals transverse diameter (ratio 1.0) is called:", a: "Barrel chest", opts: ["Pectus Excavatum", "Pectus Carinatum", "Scoliosis"]},
+        {id: 36, q: "Barrel chest is associated with:", a: "Chronic emphysema / COPD", opts: ["Pneumonia", "Tuberculosis", "Heart failure"]},
+        {id: 37, q: "Symmetric chest expansion is assessed by placing hands at level:", a: "T9 or T10", opts: ["T1 or T2", "C7", "L4 or L5"]},
+        {id: 38, q: "Hyperresonance on percussion of the lungs indicates:", a: "Pneumothorax or Emphysema (too much air)", opts: ["Pneumonia (consolidation)", "Pleural Effusion (fluid)", "Tumor"]},
+        {id: 39, q: "High-pitched musical sounds caused by airway obstruction are:", a: "Wheezes", opts: ["Crackles", "Stridor", "Friction Rub"]},
+        {id: 40, q: "Wheezes are commonly associated with:", a: "Asthma", opts: ["Heart failure", "Pneumonia", "Pleuritis"]},
+        {id: 41, q: "A sunken sternum is called:", a: "Pectus Excavatum", opts: ["Pectus Carinatum", "Kyphosis", "Scoliosis"]},
+        {id: 42, q: "A forward protrusion of the sternum is called:", a: "Pectus Carinatum", opts: ["Pectus Excavatum", "Barrel Chest", "Lordosis"]},
+        {id: 43, q: "A lateral S-shaped curvature of the spine is:", a: "Scoliosis", opts: ["Kyphosis", "Lordosis", "Ankylosis"]},
+        {id: 44, q: "An exaggerated posterior curvature of the thoracic spine (humpback) is:", a: "Kyphosis", opts: ["Scoliosis", "Lordosis", "Pectus Excavatum"]},
+        {id: 45, q: "Bronchophony is tested by asking the patient to say:", a: "99", opts: ["E-E-E", "1-2-3", "A-A-A"]},
+        {id: 46, q: "Egophony is tested by asking the patient to say:", a: "E (sounds like A if abnormal)", opts: ["99", "Blue Moon", "One-Two-Three"]},
+        {id: 47, q: "Hemoptysis refers to:", a: "Coughing up blood", opts: ["Vomiting blood", "Nose bleed", "Blood in urine"]},
+        {id: 48, q: "White or clear mucoid sputum typically indicates:", a: "Viral infections or chronic bronchitis", opts: ["Bacterial infection", "Tuberculosis", "Pulmonary edema"]},
+        {id: 49, q: "Tachypnea is defined as:", a: "Fast breathing", opts: ["Slow breathing", "Normal breathing", "Absence of breathing"]},
+        {id: 50, q: "Bradypnea is defined as:", a: "Slow breathing", opts: ["Fast breathing", "Deep breathing", "Shallow breathing"]},
+        {id: 51, q: "Periodic breathing with apnea and hyperventilation is:", a: "Cheyne-Stokes / Periodic breathing", opts: ["Kussmaul breathing", "Biot's breathing", "Eupnea"]},
+        {id: 52, q: "Crackles are:", a: "Abnormal discontinuous popping sounds", opts: ["Normal breath sounds", "Musical continuous sounds", "Loud grating sounds"]},
+        {id: 53, q: "When palpating carotid arteries, you must:", a: "Palpate one at a time", opts: ["Palpate both simultaneously", "Use the thumb only", "Press firmly"]},
+        {id: 54, q: "The optimal position to inspect Jugular Venous Pulse (JVP) is:", a: "Supine at 30-45 degrees", opts: ["Sitting upright (90 degrees)", "Lying flat (0 degrees)", "Standing"]},
+        {id: 55, q: "Normal Jugular Venous pulsation is:", a: "2 cm or less above sternal angle", opts: ["Greater than 3 cm", "Not visible", "5 cm above clavicle"]},
+        {id: 56, q: "A palpable vibration resembling a cat's purr over the heart is a:", a: "Thrill", opts: ["Heave", "Murmur", "Bruit"]},
+        {id: 57, q: "The Aortic valve area is located at:", a: "2nd Right Interspace", opts: ["2nd Left Interspace", "5th Interspace MCL", "4th Left Interspace"]},
+        {id: 58, q: "The Pulmonic valve area is located at:", a: "2nd Left Interspace", opts: ["2nd Right Interspace", "Left Lower Sternal Border", "Apex"]},
+        {id: 59, q: "The Tricuspid valve area is located at:", a: "Left Lower Sternal Border", opts: ["2nd Right Interspace", "Apex", "2nd Left Interspace"]},
+        {id: 60, q: "The Mitral valve area (Apex) is located at:", a: "5th Interspace Midclavicular Line", opts: ["2nd Right Interspace", "3rd Left Interspace", "Sternum"]},
+        {id: 61, q: "S1 signals the beginning of:", a: "Systole", opts: ["Diastole", "Atrial Kick", "Relaxation"]},
+        {id: 62, q: "S1 is caused by the closure of which valves?", a: "AV valves (Mitral/Tricuspid)", opts: ["Semilunar valves", "Aortic only", "Pulmonic only"]},
+        {id: 63, q: "S2 signals the closure of which valves?", a: "Semilunar valves (Aortic/Pulmonic)", opts: ["AV valves", "Mitral only", "Tricuspid only"]},
+        {id: 64, q: "To detect S3 and S4, place the patient in which position?", a: "Left lateral decubitus", opts: ["Supine", "Sitting forward", "Standing"]},
+        {id: 65, q: "Nocturia in heart failure patients is caused by:", a: "Recumbency promoting fluid resorption", opts: ["Drinking water at night", "Insomnia", "Medication side effects"]},
+        {id: 66, q: "A major risk factor for Peripheral Vascular Disease is:", a: "Smoking", opts: ["Exercise", "High fiber diet", "Low salt intake"]},
+        {id: 67, q: "Normal capillary refill time is:", a: "1-2 seconds", opts: ["5 seconds", "10 seconds", ">3 seconds"]},
+        {id: 68, q: "The modified Allen test is used to evaluate:", a: "Collateral circulation (Ulnar artery)", opts: ["Deep vein thrombosis", "Valve function", "Carotid patency"]},
+        {id: 69, q: "A Doppler ultrasonic probe is used to:", a: "Detect weak peripheral pulses", opts: ["Measure temperature", "Assess reflexes", "Visualize bones"]},
+        {id: 70, q: "Dysphagia refers to:", a: "Difficulty swallowing", opts: ["Pain on swallowing", "Loss of appetite", "Vomiting blood"]},
+        {id: 71, q: "Pyrosis is the medical term for:", a: "Heartburn", opts: ["Vomiting", "Diarrhea", "Belching"]},
+        {id: 72, q: "Hematemesis refers to:", a: "Vomiting blood", opts: ["Blood in stool", "Coughing blood", "Nose bleed"]},
+        {id: 73, q: "Hematemesis may indicate:", a: "Stomach/Duodenal ulcers or varices", opts: ["Appendicitis", "Cholecystitis", "Kidney stones"]},
+        {id: 74, q: "Anorexia is defined as:", a: "Loss of appetite", opts: ["Excessive eating", "Weight gain", "Nausea"]},
+        {id: 75, q: "The Liver is located in the:", a: "Right Upper Quadrant (RUQ)", opts: ["RLQ", "LUQ", "LLQ"]},
+        {id: 76, q: "The Appendix is located in the:", a: "Right Lower Quadrant (RLQ)", opts: ["RUQ", "LUQ", "LLQ"]},
+        {id: 77, q: "The Spleen is located in the:", a: "Left Upper Quadrant (LUQ)", opts: ["RUQ", "RLQ", "LLQ"]},
+        {id: 78, q: "The correct sequence for Abdominal examination is:", a: "Inspection, Auscultation, Percussion, Palpation", opts: ["Inspection, Palpation, Percussion, Auscultation", "Palpation, Inspection, Auscultation, Percussion", "Auscultation, Inspection, Palpation, Percussion"]},
+        {id: 79, q: "Why is Auscultation done before Palpation in the abdomen?", a: "To avoid altering bowel sounds", opts: ["It is less painful", "It is faster", "No specific reason"]},
+        {id: 80, q: "Normal bowel sounds occur at a rate of:", a: "5-30 per minute", opts: ["< 5 per minute", "> 30 per minute", "Constant sound"]},
+        {id: 81, q: "Hyperactive bowel sounds are defined as:", a: "> 30 per minute (Loud/Rushing)", opts: ["Silent", "< 5 per minute", "Soft/Low pitched"]},
+        {id: 82, q: "Hypoactive bowel sounds are defined as:", a: "< 5 per minute", opts: ["> 30 per minute", "Continuous", "Musical"]},
+        {id: 83, q: "Hypoactive sounds may occur after:", a: "Abdominal surgery or peritonitis", opts: ["Eating a large meal", "Diarrhea", "Laxative use"]},
+        {id: 84, q: "Which percussion sound is predominant over the stomach and intestines?", a: "Tympany", opts: ["Dullness", "Resonance", "Flatness"]},
+        {id: 85, q: "Which percussion sound is heard over solid organs like the liver/spleen?", a: "Dullness", opts: ["Tympany", "Hyperresonance", "Resonance"]},
+        {id: 86, q: "Normal liver span in adults is:", a: "6-12 cm", opts: ["2-4 cm", "15-20 cm", "Same as spleen"]},
+        {id: 87, q: "Splenic dullness should not be wider than:", a: "7 cm", opts: ["12 cm", "15 cm", "2 cm"]},
+        {id: 88, q: "Costovertebral Angle (CVA) tenderness assesses the:", a: "Kidneys", opts: ["Liver", "Spleen", "Appendix"]},
+        {id: 89, q: "CVA tenderness is checked at which rib level?", a: "12th rib", opts: ["5th rib", "1st rib", "Clavicle"]},
+        {id: 90, q: "Deep palpation of the abdomen is depressed approx:", a: "5-8 cm", opts: ["1 cm", "10-15 cm", "Surface only"]},
+        {id: 91, q: "Inspiratory Arrest (Murphy Sign) indicates:", a: "Cholecystitis (Gallbladder inflammation)", opts: ["Appendicitis", "Pancreatitis", "Gastritis"]},
+        {id: 92, q: "The umbilicus should normally be:", a: "Midline and inverted", opts: ["Deviated and everted", "Red and swollen", "Blue"]},
+        {id: 93, q: "Flexion is defined as:", a: "Bending a limb at a joint", opts: ["Straightening a limb", "Moving away from midline", "Rotating a limb"]},
+        {id: 94, q: "Extension is defined as:", a: "Straightening a limb at a joint", opts: ["Bending a limb", "Moving toward midline", "Turning palm up"]},
+        {id: 95, q: "Abduction is moving a limb:", a: "Away from the midline", opts: ["Toward the midline", "In a circle", "Backward"]},
+        {id: 96, q: "Adduction is moving a limb:", a: "Toward the midline", opts: ["Away from the midline", "Upward", "Downward"]},
+        {id: 97, q: "Pronation is turning the forearm so the palm is:", a: "Down", opts: ["Up", "Sideways", "Vertical"]},
+        {id: 98, q: "Supination is turning the forearm so the palm is:", a: "Up", opts: ["Down", "Backward", "Inward"]},
+        {id: 99, q: "Circumduction is:", a: "Moving the arm in a circle around the shoulder", opts: ["Bending the elbow", "Twisting the wrist", "Shrugging shoulders"]},
+        {id: 100, q: "Inversion is moving the sole of the foot:", a: "Inward", opts: ["Outward", "Upward", "Downward"]},
+        {id: 101, q: "Eversion is moving the sole of the foot:", a: "Outward", opts: ["Inward", "Upward", "Downward"]},
+        {id: 102, q: "Protraction is moving a body part:", a: "Forward parallel to ground", opts: ["Backward", "Up", "Down"]},
+        {id: 103, q: "Retraction is moving a body part:", a: "Backward parallel to ground", opts: ["Forward", "Up", "Down"]},
+        {id: 104, q: "Elevation is:", a: "Raising a body part", opts: ["Lowering a body part", "Rotating a body part", "Bending a body part"]},
+        {id: 105, q: "Depression is:", a: "Lowering a body part", opts: ["Raising a body part", "Extending a body part", "Flexing a body part"]},
+        {id: 106, q: "Rotation is:", a: "Moving the head around a central axis", opts: ["Bending the neck", "Looking up", "Looking down"]},
+        {id: 107, q: "Ballottement of the Patella is used to detect:", a: "Large amounts of fluid in the knee", opts: ["Fractures", "Ligament tears", "Muscle strain"]},
+        {id: 108, q: "In the Ballottement test, you push the patella:", a: "Sharply against the femur", opts: ["Gently upwards", "To the side", "Down the tibia"]},
+        {id: 109, q: "Hypopigmentation is the opposite of:", a: "Hyperpigmentation", opts: ["Erythema", "Cyanosis", "Jaundice"]},
+        {id: 110, q: "Seborrhea is to Oily as Xerosis is to:", a: "Dry", opts: ["Wet", "Red", "Blue"]},
+        {id: 111, q: "A loss of color due to lack of melanin is:", a: "Hypopigmentation", opts: ["Hyperpigmentation", "Jaundice", "Rubor"]},
+        {id: 112, q: "Excessive hair growth in females following a male pattern is:", a: "Hirsutism", opts: ["Alopecia", "Vitiligo", "Pruritus"]},
+        {id: 113, q: "Hyperthermia is associated with increased:", a: "Metabolic rate", opts: ["Blood pressure only", "Fluid intake", "Sleep"]},
+        {id: 114, q: "Which skin color change suggests systemic disease?", a: "Generalized color change", opts: ["Localized bruise", "Sunburn", "Insect bite"]},
+        {id: 115, q: "Which gland is inspected by swallowing water?", a: "Thyroid", opts: ["Parotid", "Adrenal", "Thymus"]},
+        {id: 116, q: "Orthopnea is a specific type of:", a: "Dyspnea", opts: ["Apnea", "Arrhythmia", "Murmur"]},
+        {id: 117, q: "The ratio of AP to Transverse diameter in a normal adult is:", a: "Less than 1 (0.70-0.75)", opts: ["Greater than 1", "Equal to 1", "2:1"]},
+        {id: 118, q: "Air trapped in the lungs (Hyperinflation) causes which percussion sound?", a: "Hyperresonance", opts: ["Dullness", "Flatness", "Stony Dullness"]},
+        {id: 119, q: "The Sternal Angle is a landmark for locating:", a: "2nd rib / JVP", opts: ["Xiphoid process", "7th rib", "Apex of heart"]},
+        {id: 120, q: "Diastolic filling sounds (S3, S4) are low pitched, best heard with the:", a: "Bell", opts: ["Diaphragm", "Unassisted ear", "Doppler"]},
+        {id: 121, q: "Rebound tenderness (Blumberg sign) is associated with:", a: "Appendicitis/Peritoneal inflammation", opts: ["Gas", "Constipation", "Normal finding"]},
+        {id: 122, q: "To assess kidney tenderness, use:", a: "Indirect fist percussion", opts: ["Deep palpation", "Light touch", "Auscultation"]},
+        {id: 123, q: "Moving a limb away from the body's midline is:", a: "Abduction", opts: ["Adduction", "Flexion", "Extension"]},
+        {id: 124, q: "Checking for 'Clubbing' involves looking at the:", a: "Fingernails", opts: ["Toes only", "Ears", "Nose"]},
+        {id: 125, q: "A 'Thrill' is to the heart what a '____' is to an artery.", a: "Bruit", opts: ["Murmur", "Click", "Snap"]},
+        {id: 126, q: "Capillary refill time greater than 2 seconds suggests:", a: "Poor perfusion/Dehydration", opts: ["Normal finding", "Hypertension", "Fever"]},
+        {id: 127, q: "The valve located at the 2nd Left Interspace is the:", a: "Pulmonic", opts: ["Aortic", "Tricuspid", "Mitral"]},
+        {id: 128, q: "The valve located at the 5th Interspace MCL is the:", a: "Mitral", opts: ["Tricuspid", "Pulmonic", "Aortic"]},
+        {id: 129, q: "S1 coincides with the pulse in the:", a: "Carotid artery", opts: ["Radial artery", "Femoral artery", "Pedal artery"]},
+        {id: 130, q: "Which organ is in the LUQ?", a: "Spleen", opts: ["Liver", "Appendix", "Gallbladder"]}
+    ];
 
-if (isTouchDevice) {
-    cursor.style.display = 'none';
-}
-
-const settings = {
-    vis: document.getElementById('cursor-vis'),
-    shape: document.getElementById('cursor-shape'),
-    size: document.getElementById('cursor-size'),
-    color: document.getElementById('cursor-color'),
-    text: document.getElementById('cursor-text')
-};
-
-function updateCursorStyle() {
-    const isVisible = settings.vis.value === 'visible';
-    cursor.style.display = (isVisible && !isTouchDevice) ? 'flex' : 'none';
+    let state = {
+        mode: 'menu', questions: [], index: 0, score: 0, streak: 0, 
+        xp: 0, level: 1, mastery: {}, badges: {speedster:false, streak5:false, streak10:false, survivor:false}
+    };
     
-    cursor.className = '';
-    cursor.classList.add(settings.shape.value);
+    let timerRef;
+    let isTTS = false;
     
-    cursor.style.fontSize = settings.size.value + 'px';
-    cursor.style.color = settings.color.value;
-    cursor.style.borderColor = settings.color.value;
-    cursor.style.boxShadow = `0 0 10px ${settings.color.value}`;
-    cursor.innerText = settings.text.value || 'AMER ALSHARIF';
-}
-
-[settings.vis, settings.shape, settings.size, settings.color, settings.text].forEach(el => {
-    el.addEventListener('input', updateCursorStyle);
-});
-
-if (!isTouchDevice) {
-    document.addEventListener('mousemove', (e) => {
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-    });
-
-    document.addEventListener('click', (e) => {
-        const text = document.createElement('div');
-        text.className = 'click-effect';
-        text.innerText = settings.text.value;
-        text.style.left = e.clientX + 'px';
-        text.style.top = e.clientY + 'px';
-        document.body.appendChild(text);
-
-        for(let i=0; i<5; i++) {
-            const heart = document.createElement('div');
-            heart.className = 'click-effect';
-            heart.innerText = "❤️";
-            heart.style.left = (e.clientX + (Math.random() - 0.5) * 40) + 'px';
-            heart.style.top = (e.clientY + (Math.random() - 0.5) * 40) + 'px';
-            heart.style.color = `hsl(${Math.random()*360}, 100%, 70%)`;
-            document.body.appendChild(heart);
-            setTimeout(() => { if(heart.parentNode) heart.parentNode.removeChild(heart); }, 1500);
+    // --- INIT ---
+    function init() {
+        const saved = localStorage.getItem('amer_scifi_data');
+        if(saved) {
+            let p = JSON.parse(saved);
+            state.xp = p.xp || 0; state.level = p.level || 1;
+            state.mastery = p.mastery || {}; state.badges = p.badges || state.badges;
         }
-        setTimeout(() => { if(text.parentNode) text.parentNode.removeChild(text); }, 1500);
-    });
-}
-
-/**
- * AUDIO SYSTEM
- */
-class AudioController {
-    constructor() {
-        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        this.enabled = true;
+        renderMenu();
+        updateUI();
+        initCursor();
     }
-    playTone(type) {
-        if (!this.enabled) return;
-        if (this.ctx.state === 'suspended') this.ctx.resume();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.connect(gain); gain.connect(this.ctx.destination);
-        if (type === 'correct') {
-            osc.type = 'sine'; osc.frequency.setValueAtTime(800, this.ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(1200, this.ctx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
-            osc.start(); osc.stop(this.ctx.currentTime + 0.5);
-        } else if (type === 'wrong') {
-            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, this.ctx.currentTime);
-            osc.frequency.linearRampToValueAtTime(100, this.ctx.currentTime + 0.3);
-            gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.4);
-            osc.start(); osc.stop(this.ctx.currentTime + 0.4);
+    
+    function save() {
+        localStorage.setItem('amer_scifi_data', JSON.stringify({
+            xp: state.xp, level: state.level, mastery: state.mastery, badges: state.badges
+        }));
+    }
+    
+    function resetData() {
+        if(confirm("PURGE SYSTEM DATABASE?")) {
+            localStorage.removeItem('amer_scifi_data');
+            location.reload();
         }
     }
-}
 
-/**
- * CONFETTI SYSTEM
- */
-class ConfettiSystem {
-    constructor() {
-        this.canvas = document.getElementById('confetti-canvas');
-        this.ctx = this.canvas.getContext('2d');
-        this.particles = []; 
-        this.resize();
-        window.addEventListener('resize', () => this.resize()); 
-        this.animate();
-    }
-    resize() {
-        const dpr = window.devicePixelRatio || 1;
-        this.canvas.width = window.innerWidth * dpr;
-        this.canvas.height = window.innerHeight * dpr;
-        this.ctx.scale(dpr, dpr);
-        this.canvas.style.width = window.innerWidth + 'px';
-        this.canvas.style.height = window.innerHeight + 'px';
-    }
-    burst(x, y) {
-        const colors = ['#00f3ff', '#bd00ff', '#ff0055', '#00ff88'];
-        for (let i = 0; i < 50; i++) {
-            this.particles.push({
-                x: x || window.innerWidth / 2, y: y || window.innerHeight / 2,
-                vx: (Math.random() - 0.5) * 20, vy: (Math.random() - 0.5) * 20,
-                color: colors[Math.floor(Math.random() * colors.length)], life: 1, size: Math.random() * 5 + 2
-            });
-        }
-    }
-    animate() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        for (let i = this.particles.length - 1; i >= 0; i--) {
-            let p = this.particles[i]; p.x += p.vx; p.y += p.vy; p.vy += 0.5; p.life -= 0.02; p.size *= 0.95;
-            this.ctx.fillStyle = p.color; this.ctx.globalAlpha = p.life;
-            this.ctx.beginPath(); this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); this.ctx.fill();
-            if (p.life <= 0) this.particles.splice(i, 1);
-        } this.ctx.globalAlpha = 1; requestAnimationFrame(() => this.animate());
-    }
-}
+    // --- RENDERERS ---
+    const app = document.getElementById('app-area');
 
-/**
- * BADGE & GAMIFICATION
- */
-const BADGES = [
-    { id: 'first_blood', icon: '🩸', name: 'First Blood', condition: (s) => s.totalAnswered >= 1 },
-    { id: 'streak_5', icon: '🔥', name: 'On Fire', condition: (s) => s.streak >= 5 },
-    { id: 'streak_10', icon: '⚡', name: 'Unstoppable', condition: (s) => s.streak >= 10 },
-    { id: 'speedy', icon: '⏱️', name: 'Speed Demon', condition: (s) => s.lastTimeUsed < 5 },
-    { id: 'scholar', icon: '🎓', name: 'Scholar', condition: (s) => s.totalCorrect >= 10 },
-    { id: 'master', icon: '👑', name: 'Master', condition: (s) => s.totalCorrect >= 50 },
-];
+    function renderMenu() {
+        clearInterval(timerRef);
+        state.mode = 'menu';
+        app.innerHTML = `
+            <div style="text-align:center;">
+                <h2 style="color:var(--holo-cyan); font-family:var(--font-tech); margin-bottom:10px;">SELECT MODULE</h2>
+                
+                <div style="display:flex; gap:10px; max-width:400px; margin:0 auto 20px auto;">
+                    <div style="flex:1;">
+                        <div style="font-size:0.8rem; color:var(--text-dim); text-align:left;">DATASET SIZE</div>
+                        <select id="q-count"><option value="25">25 UNITS</option><option value="50">50 UNITS</option><option value="all">FULL DATABASE</option></select>
+                    </div>
+                    <div style="flex:1;">
+                        <div style="font-size:0.8rem; color:var(--text-dim); text-align:left;">TIMER (SEC)</div>
+                        <input type="number" id="t-limit" value="15" min="5">
+                    </div>
+                </div>
 
-class Gamification {
-    constructor() {
-        this.xp = 0; this.level = 1; this.earnedBadges = []; this.initUI();
+                <div class="grid-menu">
+                    <button class="tech-btn" onclick="start('practice')">PRACTICE MODULE</button>
+                    <button class="tech-btn" onclick="start('smart')" style="border-color:var(--gold); color:var(--gold);">SMART ANALYSIS</button>
+                    <button class="tech-btn" onclick="start('challenge')">TIME CHALLENGE</button>
+                    <button class="tech-btn" onclick="start('flashcard')">DATA CARDS</button>
+                </div>
+            </div>
+        `;
+        drawPet('neutral');
     }
-    initUI() {
-        const container = document.getElementById('badge-container'); container.innerHTML = '';
-        BADGES.forEach(b => {
-            const el = document.createElement('div'); el.className = 'badge'; el.innerText = b.icon; el.title = b.name; el.id = `badge-${b.id}`;
-            container.appendChild(el);
-        });
-    }
-    addXP(amount) {
-        this.xp += amount; const req = this.level * 100;
-        if (this.xp >= req) { this.xp -= req; this.level++; }
-        this.updateUI();
-    }
-    checkBadges(stats) {
-        BADGES.forEach(b => {
-            if (!this.earnedBadges.includes(b.id) && b.condition(stats)) {
-                this.earnedBadges.push(b.id); document.getElementById(`badge-${b.id}`).classList.add('earned');
-            }
-        });
-    }
-    reset() {
-        this.xp = 0; this.level = 1; this.earnedBadges = [];
-        document.querySelectorAll('.badge').forEach(b => b.classList.remove('earned'));
-        this.updateUI();
-    }
-    updateUI() {
-        document.getElementById('level-num').innerText = this.level;
-        document.getElementById('xp-text').innerText = `${this.xp}/${this.level * 100} XP`;
-        document.getElementById('xp-fill').style.width = `${(this.xp / (this.level * 100)) * 100}%`;
-    }
-}
 
-// --- GENERATING 165 QUESTIONS ---
-const baseQuestions = [
-    { q: "Dysphagia refers to:", a: "Difficulty swallowing", opts: ["Difficulty swallowing", "Heartburn", "Loss of appetite", "Vomiting blood"], r: "Dysphagia is defined as difficulty swallowing." },
-    { q: "Pyrosis (heartburn) is caused by:", a: "Reflux of gastric acid into esophagus and stomach", opts: ["Inflammation of liver", "Reflux of gastric acid into esophagus and stomach", "Appendicitis", "Spleen enlargement"], r: "Pyrosis results from reflux of gastric acid." },
-    { q: "The liver is located in which quadrant?", a: "Right Upper Quadrant (RUQ)", opts: ["RUQ", "RLQ", "LUQ", "Midline"], r: "Anatomically, liver resides in Right Upper Quadrant." },
-    { q: "The appendix is located in which quadrant?", a: "Right Lower Quadrant (RLQ)", opts: ["RUQ", "RLQ", "LUQ", "Midline"], r: "The appendix is found in Right Lower Quadrant." },
-    { q: "The spleen is located in which quadrant?", a: "Left Upper Quadrant (LUQ)", opts: ["RUQ", "RLQ", "LUQ", "Midline"], r: "The spleen is situated in Left Upper Quadrant." },
-    { q: "The aorta is located:", a: "Midline", opts: ["RUQ", "RLQ", "LUQ", "Midline"], r: "The abdominal aorta runs midline." },
-    { q: "Hematemesis may indicate:", a: "Stomach or duodenal ulcers and esophageal varices", opts: ["Heartburn", "Stomach or duodenal ulcers and esophageal varices", "Liver enlargement", "Appendicitis"], r: "Vomiting blood (hematemesis) is a sign of ulcers or varices." },
-    { q: "Anorexia is defined as:", a: "Loss of appetite", opts: ["Nausea", "Vomiting", "Loss of appetite", "Diarrhea"], r: "Anorexia is clinical term for loss of appetite." },
-    { q: "The umbilicus is normally:", a: "Midline and inverted", opts: ["Midline and everted", "Midline and inverted", "Deviated to the left", "Deviated to the right"], r: "A normal umbilicus is midline and slightly inverted." },
-    { q: "Hyperactive bowel sounds are:", a: "Loud, high-pitched, rushing, tinkling sounds", opts: ["Soft, low-pitched, infrequent", "Loud, high-pitched, rushing, tinkling sounds", "Absent", "Only heard in RLQ"], r: "Hyperactive sounds are loud, high-pitched, and rushing." },
-    { q: "Hypoactive or absent bowel sounds occur with:", a: "Abdominal surgery or peritoneal inflammation", opts: ["Normal digestion", "Abdominal surgery or peritoneal inflammation", "Heartburn", "Liver enlargement"], r: "Ileus or peritonitis causes hypoactive or absent sounds." },
-    { q: "Normal liver span in adults:", a: "6–12 cm", opts: ["6–12 cm", "10–15 cm", "3–7 cm", "12–18 cm"], r: "The normal midclavicular liver span is 6–12 cm." },
-    { q: "Splenic dullness is normally:", a: "Not wider than 7 cm from 9th to 11th intercostal space", opts: ["Wider than 7 cm", "Not wider than 7 cm from 9th to 11th intercostal space", "Not palpable", "Only on the right side"], r: "Traube's space (splenic dullness) is usually <7cm." },
-    { q: "Costovertebral angle (CVA) tenderness is assessed by:", a: "Indirect fist percussion over 12th rib at CVA", opts: ["Direct finger palpation", "Indirect fist percussion over 12th rib at CVA", "Deep palpation at midline", "Auscultation"], r: "CVA tenderness is checked by indirect fist percussion." },
-    { q: "Deep palpation of the abdomen should be:", a: "5–8 cm", opts: ["2–3 cm", "5–8 cm", "10–12 cm", "Not recommended"], r: "Deep palpation typically reaches 5–8 cm." },
-    { q: "Inspiratory Arrest (Murphy Sign) indicates:", a: "Inflammation of the gallbladder (cholecystitis)", opts: ["Normal liver function", "Inflammation of the gallbladder (cholecystitis)", "Spleen enlargement", "Appendicitis"], r: "Murphy's sign suggests acute cholecystitis." },
-    { q: "Nocturia in a patient with heart failure occurs because:", a: "Recumbency at night promotes fluid resorption and excretion", opts: ["Drinks more fluids at night", "Recumbency at night promotes fluid resorption and excretion", "Kidney function decreases at night", "Heart rate increases at night"], r: "Lying down allows peripheral fluid to return to circulation and be filtered by kidneys." },
-    { q: "When palpating the carotid arteries, you should:", a: "Palpate only one carotid artery at a time", opts: ["Palpate both simultaneously", "Palpate only one carotid artery at a time", "Avoid palpation completely", "Palpate lightly at the same time"], r: "Palpating both can compromise cerebral blood flow." },
-    { q: "The optimal position to inspect the jugular venous pulse is:", a: "Supine at 30–45 degrees", opts: ["Standing upright", "Supine at 0 degrees", "Supine at 30–45 degrees", "Sitting fully upright"], r: "30-45 degrees optimizes JVP visibility." },
-    { q: "Normal jugular venous pulsation is:", a: "2 cm or less above the sternal angle", opts: ["1 cm above the sternal angle", "2 cm or less above the sternal angle", "3–4 cm above the sternal angle", "Not visible"], r: "JVP >3cm is elevated; normal is 2cm or less." },
-    { q: "The aortic valve area is best auscultated at:", a: "Second right interspace", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Aortic area is 2nd right intercostal space." },
-    { q: "The pulmonic valve area is auscultated at:", a: "Second left interspace", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Pulmonic area is 2nd left intercostal space." },
-    { q: "The tricuspid valve area is located at:", a: "Left lower sternal border", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Tricuspid area is left lower sternal border." },
-    { q: "The mitral valve area is located at:", a: "Fifth interspace at left midclavicular line", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Mitral area is apex (5th intercostal, midclavicular)." },
-    { q: "The first heart sound (S1) is caused by:", a: "Closure of the AV valves", opts: ["Closure of the semilunar valves", "Closure of the AV valves", "Ventricular filling", "Atrial contraction"], r: "S1 is the 'lub' caused by AV (Mitral/Tricuspid) closure." },
-    { q: "The second heart sound (S2) is caused by:", a: "Closure of the semilunar valves", opts: ["Closure of the semilunar valves", "Closure of the AV valves", "Ventricular filling", "Atrial contraction"], r: "S2 is the 'dub' caused by Aortic/Pulmonic valve closure." },
-    { q: "To detect diastolic filling sounds, you should:", a: "Roll the patient toward their left side and use the bell at the apex", opts: ["Listen only in the supine position", "Roll the patient toward their left side and use the bell at the apex", "Listen with the diaphragm at the base", "Only palpate the apex"], r: "Left lateral decubitus position enhances S3/S4." },
-    { q: "The modified Allen test is used to:", a: "Assess patency of radial and ulnar arteries and collateral circulation to the hand", opts: ["Measure blood pressure", "Assess patency of radial and ulnar arteries and collateral circulation to the hand", "Detect heart murmurs", "Evaluate venous return"], r: "Allen test checks ulnar artery patency before radial artery stick." },
-    { q: "Normal color return in the feet after compression should be:", a: "10 seconds or less", opts: ["5 seconds or less", "10 seconds or less", "15 seconds or less", "20 seconds or less"], r: "Capillary refill should be brisk, usually < 2 seconds, definitely < 10s." },
-    { q: "A Doppler ultrasonic probe is used to:", a: "All of the above", opts: ["Detect a weak peripheral pulse", "Monitor blood pressure in infants or children", "Measure low blood pressure or blood pressure in a lower extremity", "All of the above"], r: "Doppler amplifies sound for weak pulses or BP measurement." },
-    { q: "A thrill is:", a: "A palpable vibration that feels like the throat of a purring cat", opts: ["A type of heart sound heard with a stethoscope", "A palpable vibration that feels like the throat of a purring cat", "A normal finding in all adults", "A sign of weak pulses"], r: "A thrill is a palpable murmur." },
-    { q: "Flexion is:", a: "Bending a limb at a joint", opts: ["Straightening a limb at a joint", "Bending a limb at a joint", "Moving a limb away from the midline", "Moving a limb toward the midline"], r: "Flexion decreases the angle of the joint." },
-    { q: "Extension is:", a: "Straightening a limb at a joint", opts: ["Bending a limb at a joint", "Straightening a limb at a joint", "Turning the forearm so the palm is up", "Raising a body part"], r: "Extension increases the angle of the joint." },
-    { q: "Abduction is:", a: "Moving a limb away from the midline of the body", opts: ["Moving a limb toward the midline", "Moving a limb away from the midline of the body", "Turning the forearm so the palm is down", "Lowering a body part"], r: "Abduction moves away from the midline." },
-    { q: "Adduction is:", a: "Moving a limb toward the midline of the body", opts: ["Moving a limb away from the midline", "Moving a limb toward the midline of the body", "Raising a body part", "Lowering a body part"], r: "Adduction moves toward the midline." },
-    { q: "Pronation is:", a: "Turning the forearm so the palm is down", opts: ["Turning the forearm so the palm is down", "Turning the forearm so the palm is up", "Moving the arm in a circle around the shoulder", "Moving the head around a central axis"], r: "Pronation turns the palm posteriorly (down)." },
-    { q: "Supination is:", a: "Turning the forearm so the palm is up", opts: ["Turning the forearm so the palm is down", "Turning the forearm so the palm is up", "Raising a body part", "Lowering a body part"], r: "Supination turns the palm anteriorly (up)." },
-    { q: "Circumduction is:", a: "Moving the arm in a circle around the shoulder", opts: ["Bending a limb at a joint", "Moving the arm in a circle around the shoulder", "Moving the sole of the foot inward at the ankle", "Moving the head around a central axis"], r: "Circumduction is a circular movement." },
-    { q: "Inversion is:", a: "Moving the sole of the foot inward at the ankle", opts: ["Moving the sole of the foot outward at the ankle", "Moving the sole of the foot inward at the ankle", "Raising a body part", "Lowering a body part"], r: "Inversion lifts the sole medially." },
-    { q: "Eversion is:", a: "Moving the sole of the foot outward at the ankle", opts: ["Moving the sole of the foot outward at the ankle", "Moving the sole of the foot inward at the ankle", "Moving a limb away from the midline", "Moving the head around a central axis"], r: "Eversion lifts the sole laterally." },
-    { q: "Rotation is:", a: "Moving the head around a central axis", opts: ["Moving the head around a central axis", "Moving the arm in a circle around the shoulder", "Bending a limb at a joint", "Turning the forearm so the palm is up"], r: "Rotation turns around a longitudinal axis." },
-    { q: "Protraction is:", a: "Moving a body part forward and parallel to the ground", opts: ["Moving a body part backward and parallel to the ground", "Moving a body part forward and parallel to the ground", "Raising a body part", "Lowering a body part"], r: "Protraction moves forward (e.g., jutting jaw)." },
-    { q: "Retraction is:", a: "Moving a body part backward and parallel to the ground", opts: ["Moving a body part backward and parallel to the ground", "Moving a body part forward and parallel to the ground", "Bending a limb", "Straightening a limb"], r: "Retraction moves backward." },
-    { q: "Elevation is:", a: "Raising a body part", opts: ["Raising a body part", "Lowering a body part", "Moving a limb toward the midline", "Turning the forearm"], r: "Elevation moves a part superiorly." },
-    { q: "Depression is:", a: "Lowering a body part", opts: ["Raising a body part", "Lowering a body part", "Moving the sole of the foot inward", "Moving a limb away from the midline"], r: "Depression moves a part inferiorly." },
-    { q: "Ballottement of the Patella is used to:", a: "Detect large amounts of fluid in the knee", opts: ["Assess for joint instability", "Detect large amounts of fluid in the knee", "Measure limb rotation", "Test ankle mobility"], r: "Ballottement checks for effusion in the knee." },
-    { q: "In the Ballottement test, you:", a: "Push the patella sharply against the femur while compressing the suprapatellar pouch", opts: ["Push the patella sharply against the femur while compressing the suprapatellar pouch", "Pull the patella upward gently", "Rotate the knee externally", "Bend the knee fully to 90 degrees"], r: "The technique pushes fluid into the joint space." },
-    { q: "Hypopigmentation refers to:", a: "Loss of skin color", opts: ["Increase in skin color", "Loss of skin color", "Bluish discoloration", "Yellow discoloration"], r: "Hypopigmentation is loss of melanin/color." },
-    { q: "A generalized color change of the skin usually suggests:", a: "Systemic disease", opts: ["Local infection", "Trauma", "Systemic disease", "Normal aging"], r: "Generalized changes (like jaundice) suggest systemic issues." },
-    { q: "Hyperpigmentation is best defined as:", a: "Increase in skin color", opts: ["Absence of melanin", "Loss of skin moisture", "Increase in skin color", "Bluish mottling"], r: "Hyperpigmentation is an increase in skin color." },
-    { q: "Which condition describes oily skin?", a: "Seborrhea", opts: ["Xerosis", "Seborrhea", "Alopecia", "Vitiligo"], r: "Seborrhea is characterized by excessive oil production." },
-    { q: "Xerosis refers to skin that is:", a: "Dry", opts: ["Oily", "Inflamed", "Dry", "Pigmented"], r: "Xerosis is medical term for dry skin." },
-    { q: "Which change in a mole is most concerning?", a: "Sudden bleeding or itching", opts: ["Present since childhood", "Uniform color", "Sudden bleeding or itching", "Small size"], r: "Changes like bleeding or itching (ABCDE rule) signal concern." },
-    { q: "Hirsutism is defined as:", a: "Excessive or shaggy hair growth", opts: ["Loss of scalp hair", "Patchy absence of pigment", "Excessive or shaggy hair growth", "Brittle hair"], r: "Hirsutism is abnormal hair growth in women/male-pattern." },
-    { q: "Alopecia refers to:", a: "Significant hair loss", opts: ["Excess body hair", "Significant hair loss", "Oily scalp", "White hair patches"], r: "Alopecia is hair loss or baldness." },
-    { q: "Vitiligo is characterized by:", a: "Complete absence of melanin", opts: ["Yellow discoloration", "Bluish tone", "Complete absence of melanin", "Red lesions"], r: "Vitiligo is destruction of melanocytes causing white patches." },
-    { q: "A mole (nevus) is best described as:", a: "A clump of melanocytes", opts: ["Dilated capillaries", "A clump of melanocytes", "Fluid accumulation", "Infection"], r: "A nevus is a proliferation of melanocytes." },
-    { q: "A junctional nevus is:", a: "Flat and common in children", opts: ["Raised only", "Seen in elderly", "Flat and common in children", "Always malignant"], r: "Junctional nevi are flat and appear in childhood." },
-    { q: "Erythema occurs due to:", a: "Dilated capillaries", opts: ["Decreased oxygen", "Excess bilirubin", "Dilated capillaries", "Lack of melanin"], r: "Erythema is redness caused by capillary dilation." },
-    { q: "Cyanosis is caused by:", a: "Decreased perfusion", opts: ["Increased blood flow", "Decreased perfusion", "Excess melanin", "High bilirubin"], r: "Cyanosis is a bluish color due to deoxygenated hemoglobin." },
-    { q: "Jaundice indicates increased levels of:", a: "Bilirubin", opts: ["Hemoglobin", "Melanin", "Bilirubin", "Oxygen"], r: "Jaundice is yellowing from bilirubin." },
-    { q: "Hypothermia refers to:", a: "Generalized coolness", opts: ["Fever", "Generalized coolness", "Infection", "Inflammation"], r: "Hypothermia is a lower than normal body temperature." },
-    { q: "Hyperthermia commonly occurs with:", a: "Fever or exercise", opts: ["Fever or exercise", "Shock", "Liver failure", "Vitiligo"], r: "Hyperthermia is elevated body temperature due to fever/exercise." },
-    { q: "Normal skin texture feels:", a: "Smooth and firm", opts: ["Rough", "Smooth and firm", "Sticky", "Fragile"], r: "Normal skin is smooth and firm." },
-    { q: "Thickened calluses are normal on:", a: "Palms and soles", opts: ["Abdomen", "Face", "Palms and soles", "Back"], r: "Friction causes calluses on palms and soles." },
-    { q: "Edema is:", a: "Fluid in interstitial space", opts: ["Skin redness", "Fluid in interstitial space", "Pigment loss", "Dry skin"], r: "Edema is swelling from fluid accumulation." },
-    { q: "Cherry angiomas are:", a: "Small bright red raised dots", opts: ["Large painful lesions", "Blue nodules", "Small bright red raised dots", "Cancerous"], r: "Cherry angiomas are common benign vascular lesions." },
-    { q: "Normal nail base angle is about:", a: "160°", opts: ["90°", "120°", "160°", "200°"], r: "Normal Lovibond angle is about 160 degrees." },
-    { q: "Clubbing of nails occurs with:", a: "Congenital cyanotic heart disease", opts: ["Dehydration", "Congenital cyanotic heart disease", "Vitiligo", "Xerosis"], r: "Clubbing is associated with hypoxia (heart/lung disease)." },
-    { q: "Normal capillary refill time is:", a: "Instant to a few seconds", opts: [">10 seconds", "5–7 seconds", "Instant to a few seconds", "Absent"], r: "Capillary refill should be < 2 seconds." },
-    { q: "Hemoptysis refers to:", a: "Abnormal sputum", opts: ["Normal sputum", "Abnormal sputum", "Coughing blood", "Wheezing"], r: "Hemoptysis specifically refers to coughing up blood." },
-    { q: "White or clear mucoid sputum is characteristic of:", a: "Viral infections or chronic bronchitis", opts: ["Bacterial pneumonia", "Viral infections or chronic bronchitis", "Tuberculosis", "Pulmonary embolism"], r: "Viral infections typically produce clear/white sputum." },
-    { q: "Dyspnea in hospitalized patients is:", a: "Common", opts: ["Rare", "Common", "Only occurs with heart failure", "Only occurs at night"], r: "Dyspnea is a common symptom in hospitalized patients." },
-    { q: "Orthopnea is:", a: "Shortness of breath when lying flat", opts: ["Shortness of breath when lying flat", "Shortness of breath with exertion", "Shortness of breath at rest", "Coughing up blood"], r: "Orthopnea is breathlessness relieved by sitting up." },
-    { q: "The correct sequence for respiratory examination is:", a: "Inspection → Palpation → Percussion → Auscultation", opts: ["Inspection → Palpation → Percussion → Auscultation", "Palpation → Inspection → Auscultation → Percussion", "Auscultation → Percussion → Palpation → Inspection", "Percussion → Inspection → Palpation → Auscultation"], r: "Standard order: IPPA." },
-    { q: "Barrel chest is characterized by:", a: "Equal AP-to-transverse diameter with horizontal ribs", opts: ["Decreased AP-to-transverse diameter", "Ribs sloping downward", "Equal AP-to-transverse diameter with horizontal ribs", "Sunken sternum"], r: "Barrel chest has increased AP diameter and horizontal ribs." },
-    { q: "Barrel chest is associated with:", a: "All of the above", opts: ["Normal aging", "Chronic emphysema", "Asthma", "All of the above"], r: "Aging, emphysema, and asthma can cause barrel chest." },
-    { q: "Scoliosis is:", a: "Lateral S-shaped curvature of thoracic and lumbar spine", opts: ["Exaggerated posterior curvature of thoracic spine", "Lateral S-shaped curvature of thoracic and lumbar spine", "Forward protrusion of sternum", "Hyperinflation of lungs"], r: "Scoliosis is a lateral curvature of the spine." },
-    { q: "Kyphosis is:", a: "Exaggerated posterior curvature of thoracic spine", opts: ["Forward protrusion of sternum", "Sunken sternum", "Exaggerated posterior curvature of thoracic spine", "Lateral curvature of lumbar spine"], r: "Kyphosis is a hunchback (posterior curve)." },
-    { q: "Hyperresonance on percussion indicates:", a: "Too much air in lungs (hyperinflation)", opts: ["Normal lung tissue", "Fluid in lungs", "Too much air in lungs (hyperinflation)", "Solid mass"], r: "Hyperresonance suggests air trapping (e.g., COPD, Pneumothorax)." },
-    { q: "Symmetric chest expansion is confirmed by placing hands at:", a: "T9–T10", opts: ["T1–T2", "T5–T6", "T9–T10", "L1–L2"], r: "Thumbs at T9-T10 level observe symmetric expansion." },
-    { q: "Crackles are:", a: "Abnormal", opts: ["Normal", "Abnormal", "High pitched", "Musical"], r: "Crackles (rales) are abnormal sounds like hair rubbing." },
-    { q: "AP-to-transverse diameter ratio in adults:", a: "0.70–0.75", opts: ["0.50–0.55", "0.60–0.65", "0.70–0.75", "0.80–0.85"], r: "Normal AP ratio is 1:2 or 0.5, but increases up to 0.75 with age/COPD." },
-    { q: "AP-to-transverse ratio increases with:", a: "Age", opts: ["Age", "Exercise", "Fever", "Infection"], r: "The chest barrel shape (increased AP ratio) increases with age." },
-    { q: "Tachypnea refers to:", a: "Fast breathing", opts: ["Slow breathing", "Fast breathing", "Periodic breathing", "Shortness of breath only at night"], r: "Tachypnea is rapid breathing (>20/min)." },
-    { q: "Bradypnea refers to:", a: "Slow breathing", opts: ["Slow breathing", "Fast breathing", "Wheezing", "Coughing"], r: "Bradypnea is slow breathing (<12/min)." },
-    { q: "Periodic breathing is:", a: "Alternating periods of apnea and hyperventilation", opts: ["Normal in adults", "Alternating periods of apnea and hyperventilation", "Only seen in sleep apnea", "Sign of asthma"], r: "Cheyne-Stokes is periodic breathing." },
-    { q: "Pectus Carinatum is characterized by:", a: "Forward protrusion of the sternum with ribs sloping back at either side", opts: ["Sunken sternum and adjacent cartilages", "Forward protrusion of the sternum with ribs sloping back at either side", "Barrel-shaped chest", "Lateral S-shaped curvature of spine"], r: "Pectus Carinatum is 'pigeon chest'." },
-    { q: "Wheeze is characterized by:", a: "High-pitched sound due to diffuse airway obstruction (e.g., acute asthma)", opts: ["Low-pitched sound, normal finding", "High-pitched sound due to diffuse airway obstruction (e.g., acute asthma)", "Discontinuous popping sound on inspiration", "Normal expiratory sound"], r: "Wheezes are high-pitched musical sounds from asthma/COPD." },
-    { q: "Who's responsible of loss of the color?", a: "Melanin", opts: ["Hemoglobin", "Melanin", "Keratin", "Collagen"], r: "Loss of color (hypopigmentation) is absence of melanin." },
-    { q: "Hypopigmentation is defined as:", a: "Loss of color", opts: ["Gain of color", "Loss of color", "Redness", "Blue tint"], r: "Hypopigmentation is loss of color." },
-    { q: "Hyperpigmentation is defined as:", a: "Increase of color", opts: ["Loss of color", "Increase of color", "Inflammation", "Dryness"], r: "Hyperpigmentation is increase of color." },
-    { q: "Xerosis is dry skin. Seborrhea is:", a: "Oily skin", opts: ["Dry skin", "Oily skin", "Wet skin", "Scaly skin"], r: "Seborrhea is oily skin." },
-    { q: "Alopecia is a significant loss, a full head of hair. Hirsutism is:", a: "Shaggy or excessive hair", opts: ["Hair loss", "Shaggy or excessive hair", "Soft hair", "Baldness"], r: "Hirsutism is shaggy or excessive hair." },
-    { q: "Vitiligo is complete absence of melanin pigment in:", a: "Patchy areas", opts: ["The whole body", "Patchy areas", "Only hands", "Only face"], r: "Vitiligo is absence of melanin in patchy areas." },
-    { q: "A mole is a clump of melanocytes. Erythema is:", a: "Hyperemia in dilated superficial capillaries", opts: ["Loss of blood", "Hyperemia in dilated superficial capillaries", "Low blood", "Pale skin"], r: "Erythema is hyperemia in dilated superficial capillaries." },
-    { q: "Cyanosis is a bluish mottled color, seen mostly in:", a: "The lip", opts: ["The arm", "The leg", "The lip", "The back"], r: "Cyanosis is bluish mottled color seen mostly in the lip." },
-    { q: "Hypothermia is generalized coolness. Hyperthermia occurs when:", a: "Metabolic rate increases", opts: ["Metabolic rate increases", "Metabolic rate decreases", "You sleep", "You drink water"], r: "Hyperthermia occurs when metabolic rate increases." },
-    { q: "Diaphoresis and dehydration can be seen when:", a: "Inspecting skin", opts: ["Listening to heart", "Inspecting skin", "Palpating abdomen", "Checking eyes"], r: "Diaphoresis is seen when inspecting skin." },
-    { q: "Texture of the skin is usually smooth and firm. Hirsutism happens due to:", a: "Endocrine abnormalities", opts: ["Endocrine abnormalities", "Vitamin deficiency", "Trauma", "Infection"], r: "Hirsutism happens due to endocrine abnormalities." },
-    { q: "Normal clubbing is 160 degrees. Clubbing is associated with:", a: "Heart disease, lung cancer, and pulmonary disease", opts: ["Heart disease, lung cancer, and pulmonary disease", "Skin infections only", "Stomach flu", "Broken bones"], r: "Clubbing is associated with heart/lung disease." },
-    { q: "Dysphagia is difficulty swallowing. Edema is:", a: "Accumulation of fluids", opts: ["Loss of fluids", "Accumulation of fluids", "Air in lungs", "Gas in stomach"], r: "Edema is accumulation of fluids." },
-    { q: "Lymphadenopathy means enlargement of lymph nodes more than:", a: "1 cm", opts: ["0.5 cm", "1 cm", "2 cm", "5 cm"], r: "Lymphadenopathy means enlargement > 1 cm." },
-    { q: "Normally the trachea is:", a: "Midline", opts: ["Left", "Right", "Midline", "Rotated"], r: "Trachea is normally midline." },
-    { q: "Inspect thyroid by asking patient to:", a: "Drink sips of water", opts: ["Cough", "Drink sips of water", "Hold breath", "Lie down"], r: "Inspect thyroid by asking patient to drink water." },
-    { q: "Normal adult thyroid cannot be palpated. If thyroid is palpated and hard, it indicates:", a: "Cancer", opts: ["Infection", "Cancer", "Goiter", "Cyst"], r: "Hard thyroid suggests cancer." },
-    { q: "If thyroid enlarged, auscultate carotid for:", a: "Bruit", opts: ["Murmur", "Bruit", "Click", "Rub"], r: "Enlarged thyroid requires auscultating carotid for bruit." },
-    { q: "Dyspnea is common symptom. Orthopnea is difficulty breathing when:", a: "Supine", opts: ["Supine", "Standing", "Sitting", "Running"], r: "Orthopnea is difficulty breathing when supine." },
-    { q: "Lung sequence: inspection, palpation, percussion, auscultation. AP diameter should be less than transverse diameter (ratio 0.70 to 0.75). Symmetric chest expansion check at level:", a: "T9 or T10", opts: ["T1 or T2", "T5 or T6", "T9 or T10", "L1 or L2"], r: "Check expansion at T9 or T10." },
-    { q: "Hyperresonance is associated with pneumothorax. Wheezes associated with:", a: "Asthma", opts: ["Bronchitis", "Asthma", "Pneumonia", "Fractured rib"], r: "Wheezes are associated with asthma." },
-    { q: "Barrel chest has equal AP to transverse diameter. Pectus excavatum is:", a: "Sinking sternum", opts: ["Sinking sternum", "Protruding sternum", "Normal chest", "Barrel chest"], r: "Pectus excavatum is sinking sternum." },
-    { q: "Pectus carinatum is forward protrusion of sternum. Scoliosis is:", a: "Lateral S shape", opts: ["Lateral S shape", "Forward curve", "Backward curve", "Rotation"], r: "Scoliosis is a lateral S shape." },
-    { q: "Kyphosis is exaggerated posterior curvature. Bronchophony: say:", a: "99", opts: ["EEE", "99", "AHH", "OOO"], r: "Bronchophony test: say 99." },
-    { q: "Egophony: say E. Palpate one carotid at a time. JVP angle 30 to 45 degrees, should be:", a: "2 cm or less", opts: ["1 cm or less", "2 cm or less", "5 cm or less", "10 cm or less"], r: "JVP should be 2 cm or less." },
-    { q: "A thrill is palpable vibration. Aortic area: 2nd right interspace. Pulmonic:", a: "2nd left interspace", opts: ["2nd right interspace", "2nd left interspace", "5th left interspace", "Left sternal border"], r: "Pulmonic area is 2nd left interspace." },
-    { q: "Mitral: 5th interspace midclavicular. Tricuspid:", a: "Left lower sternal border", opts: ["2nd right interspace", "2nd left interspace", "5th interspace midclavicular", "Left lower sternal border"], r: "Tricuspid area is left lower sternal border." },
-    { q: "S1 signals beginning of systole (AV valves close). S2 signals:", a: "Closure of semilunar valves", opts: ["Closure of semilunar valves", "Opening of AV valves", "Atrial contraction", "Ventricular filling"], r: "S2 signals closure of semilunar valves." },
-    { q: "S3/S4 check in left lateral position. Peripheral disease risk:", a: "Smoking", opts: ["Smoking", "Vegetarian diet", "Running", "Swimming"], r: "Smoking is a risk for peripheral disease." },
-    { q: "Capillary refill: 1-2 seconds. Allen test evaluates:", a: "Ulnar artery", opts: ["Radial artery only", "Ulnar artery", "Femoral artery", "Carotid artery"], r: "Allen test evaluates ulnar artery." },
-    { q: "Liver: RUQ. Appendix: RLQ. Spleen: LUQ. Hematemesis:", a: "Vomiting blood (ulcers/varices)", opts: ["Coughing blood", "Vomiting blood (ulcers/varices)", "Blood in stool", "Bloody urine"], r: "Hematemesis is vomiting blood." },
-    { q: "Abdomen sequence: Inspection, Auscultation, Percussion, Palpation. Bowel sounds: 5-30/min. Hyperactive >30. Hypoactive <5. Tympany over:", a: "Stomach/intestine", opts: ["Liver", "Spleen", "Stomach/intestine", "Kidney"], r: "Tympany is over stomach/intestine (gas)." },
-    { q: "Dullness over liver/spleen. Liver span: 6-12 cm. Costovertebral angle tenderness checks:", a: "Kidney (12th rib)", opts: ["Liver", "Kidney (12th rib)", "Spleen", "Heart"], r: "CVA tenderness checks kidney (12th rib)." },
-    { q: "Flexion: bending. Extension: straightening. Abduction:", a: "Away from midline", opts: ["Towards midline", "Away from midline", "Up", "Down"], r: "Abduction is moving away from midline." },
-    { q: "Adduction: toward midline. Pronation: palm down. Supination:", a: "Palm up", opts: ["Palm down", "Palm up", "Palm side", "Palm forward"], r: "Supination is palm up." },
-    { q: "Inversion: sole inward. Eversion: sole outward. Protraction:", a: "Forward parallel to ground", opts: ["Backward parallel to ground", "Forward parallel to ground", "Up", "Down"], r: "Protraction is forward parallel to ground." },
-    { q: "Retraction: backward parallel. Ballottement of Patella is used to Detect large amounts of fluid in the knee.", a: "Detect large amounts of fluid in the knee", opts: ["Check bone fractures", "Detect large amounts of fluid in the knee", "Test ligaments", "Check nerve reflex"], r: "Ballottement detects large amounts of fluid in the knee." }
-];
-
-// Fill array to 165 items
-let questionBank = [...baseQuestions];
-while(questionBank.length < 165) {
-    const randomQ = baseQuestions[Math.floor(Math.random() * baseQuestions.length)];
-    questionBank.push({...randomQ});
-}
-
-/**
- * PET GAME LOGIC (High DPI Support)
- */
-class PetGame {
-    constructor() {
-        this.canvas = document.getElementById('pet-canvas');
-        this.ctx = this.canvas.getContext('2d');
-        this.statusMsg = document.getElementById('pet-msg');
-        this.resize();
-        this.state = 'IDLE'; this.pulseRate = 60; this.pulseColor = '#00ff88';
-        window.addEventListener('resize', () => this.resize()); this.animate();
-    }
-    resize() {
-        const dpr = window.devicePixelRatio || 1;
-        const rect = this.canvas.parentElement.getBoundingClientRect();
-        this.canvas.width = rect.width * dpr;
-        this.canvas.height = rect.height * dpr;
-        this.ctx.scale(dpr, dpr);
-    }
-    setState(newState) {
-        this.state = newState;
-        switch(newState) {
-            case 'IDLE': this.pulseColor = '#00ff88'; this.pulseRate = 60; this.statusMsg.innerText = "READY"; break;
-            case 'HAPPY': this.pulseColor = '#00f3ff'; this.pulseRate = 100; this.statusMsg.innerText = "NICE!"; break;
-            case 'PANIC': this.pulseColor = '#ff0055'; this.pulseRate = 150; this.statusMsg.innerText = "HURRY!"; break;
-            case 'DIZZY': this.pulseColor = '#ffcc00'; this.pulseRate = 30; this.statusMsg.innerText = "OOPS..."; break;
-        }
-        if(newState !== 'PANIC') setTimeout(() => { if(this.state === newState) this.setState('IDLE'); }, 1500);
-    }
-    draw() {
-        const ctx = this.ctx;
-        const rect = this.canvas.parentElement.getBoundingClientRect();
-        const cx = rect.width / 2;
-        const cy = rect.height / 2;
-        const time = Date.now() / 1000;
+    window.start = function(mode) {
+        state.mode = mode;
+        state.index = 0; state.score = 0; state.streak = 0;
         
-        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        let limit = document.getElementById('q-count') ? document.getElementById('q-count').value : '25';
+        limit = limit === 'all' ? 9999 : parseInt(limit);
         
-        const beat = Math.sin(time * (this.pulseRate / 60) * Math.PI * 2);
-        const scale = 1 + (beat > 0.8 ? beat * 0.2 : 0); 
-        
-        ctx.fillStyle = this.pulseColor;
-        ctx.beginPath();
-        ctx.arc(cx, cy, 20 * scale, 0, Math.PI * 2);
-        ctx.fill();
-        
-        ctx.shadowBlur = 20; ctx.shadowColor = this.pulseColor;
-        ctx.stroke(); ctx.shadowBlur = 0;
-        
-        ctx.strokeStyle = this.pulseColor;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(0, cy);
-        for(let x=0; x<rect.width; x++) {
-            const relX = (x + Date.now() * (this.pulseRate/60)) % 200;
-            let y = cy;
-            if (relX > 140 && relX < 180) {
-                 if (relX < 145) y -= 5;
-                 else if (relX < 155) y += 15; 
-                 else if (relX < 165) y -= 30; 
-                 else y += 10; 
-            }
-            ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-        
-        ctx.fillStyle = '#0a0a10';
-        if (this.state === 'PANIC') {
-            ctx.beginPath(); ctx.arc(cx-7, cy-5, 4, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(cx+7, cy-5, 4, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(cx, cy+5, 8, 0, Math.PI, false); ctx.stroke();
-        } else if (this.state === 'DIZZY') {
-            ctx.lineWidth = 2; ctx.strokeStyle = '#0a0a10';
-            ctx.beginPath(); ctx.moveTo(cx-10, cy-10); ctx.lineTo(cx-4, cy-4); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx-4, cy-10); ctx.lineTo(cx-10, cy-4); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx+10, cy-10); ctx.lineTo(cx+4, cy-4); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx+4, cy-10); ctx.lineTo(cx+10, cy-4); ctx.stroke();
+        let qSet = [...rawData];
+        if(mode === 'smart') {
+            qSet.sort((a,b) => (state.mastery[a.id]||0) - (state.mastery[b.id]||0));
         } else {
-            ctx.beginPath(); ctx.arc(cx-7, cy-5, 3, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(cx+7, cy-5, 3, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(cx, cy+5, 5, 0, Math.PI, false); ctx.stroke();
+            qSet.sort(() => Math.random() - 0.5);
         }
-    }
-    animate() {
-        this.draw();
-        requestAnimationFrame(() => this.animate());
-    }
-}
-
-/**
- * MAIN APP LOGIC
- */
-class QuizApp {
-    constructor() {
-        this.pet = new PetGame();
-        this.confetti = new ConfettiSystem();
-        this.audio = new AudioController();
-        this.gamification = new Gamification();
-        this.synth = window.speechSynthesis;
-        this.questions = [];
-        this.allQuizHistory = []; 
-        this.currentQIndex = 0;
-        this.score = 0; // Simple Score
-        this.xpScore = 0; // XP Score
-        this.streak = 0;
-        this.timer = null;
-        this.timeLeft = 0;
-        this.maxTime = 30;
-        this.isAnswering = false;
-        this.startTime = 0;
+        state.questions = qSet.slice(0, limit);
         
-        // Easy Scoring Mode Toggle
-        this.simpleMode = false;
-
-        this.ui = {
-            question: document.getElementById('question-text'),
-            options: document.getElementById('options-container'),
-            bigTimer: document.getElementById('big-timer'),
-            score: document.getElementById('score'),
-            streak: document.getElementById('streak'),
-            qCurrent: document.getElementById('q-current'),
-            qTotal: document.getElementById('q-total'),
-            modal: document.getElementById('result-modal'),
-            fbPanel: document.getElementById('feedback-panel'),
-            fbTitle: document.getElementById('fb-title'),
-            fbText: document.getElementById('fb-text'),
-            skipBtn: document.getElementById('skip-btn'),
-            hintBubble: document.getElementById('hint-bubble'),
-            xpHud: document.getElementById('xp-hud'),
-            simpleScoreDisplay: document.getElementById('simple-score-display')
-        };
-    }
-    
-    toggleScoringMode() {
-        this.simpleMode = document.getElementById('simple-scoring').checked;
+        if(mode === 'challenge') {
+            state.timeLeft = document.getElementById('t-limit') ? parseInt(document.getElementById('t-limit').value) : 15;
+        }
         
-        if (this.simpleMode) {
-            // Show Simple Display
-            this.ui.simpleScoreDisplay.style.display = 'block';
-            this.ui.xpHud.style.display = 'none'; // Hide the complex XP/Streak top bar
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        if(state.index >= state.questions.length) { renderEnd(); return; }
+        
+        let q = state.questions[state.index];
+        let opts = [...q.opts, q.a].sort(() => Math.random() - 0.5);
+        
+        window.speechSynthesis.cancel();
+        if(isTTS) speak(q.q);
+
+        if(state.mode === 'flashcard') {
+            renderCard(q);
         } else {
-            // Show XP Display
-            this.ui.simpleScoreDisplay.style.display = 'none';
-            this.ui.xpHud.style.display = 'flex';
+            renderQuiz(q, opts);
         }
     }
 
-    showSection(id) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        
-        // Handle Active State for both Nav bars
-        const btns = document.querySelectorAll('.nav-btn');
-        btns.forEach(b => b.classList.remove('active'));
-        
-        // Highlight correct button based on ID
-        if (id === 'quiz-challenge') {
-            document.querySelectorAll('button[onclick*="quiz-challenge"]').forEach(b => b.classList.add('active'));
-            document.getElementById('aladdin-container').style.display = 'flex';
-        } 
-        else if (id === 'flashcards') {
-            document.querySelectorAll('button[onclick*="flashcards"]').forEach(b => b.classList.add('active'));
-            document.getElementById('aladdin-container').style.display = 'none';
-        }
-        else if (id === 'review-section') {
-            document.querySelectorAll('button[onclick*="settings"]').forEach(b => b.classList.add('active')); // Assuming back to menu
-            document.getElementById('aladdin-container').style.display = 'none';
-        }
-        else {
-            document.querySelectorAll('button[onclick*="settings"]').forEach(b => b.classList.add('active'));
-            document.getElementById('aladdin-container').style.display = 'none';
-        }
+    function renderQuiz(q, opts) {
+        let timerUI = state.mode === 'challenge' ? `<div style="width:100%; height:4px; background:#0f172a; margin-bottom:20px;"><div id="t-bar" style="height:100%; background:var(--alert-red); width:100%;"></div></div>` : '';
+        let aladdinBtn = (['practice','challenge','smart'].includes(state.mode)) ? 
+            `<button class="tech-btn" style="padding:10px; font-size:0.8rem; border-color:var(--gold); color:var(--gold);" onclick="magic('${q.a.replace(/'/g,"\\'")}')">GENIE PROTOCOL</button>` : '';
 
-        document.getElementById(id).classList.add('active');
-        if(id === 'flashcards') flashcardApp.init();
-    }
-    
-    initQuiz() {
-        const count = parseInt(document.getElementById('q-count').value) || 20;
-        this.maxTime = parseInt(document.getElementById('q-time').value) || 30;
-        this.audio.enabled = document.getElementById('sfx-enable').checked;
-        this.questions = [...questionBank].sort(() => 0.5 - Math.random()).slice(0, count);
-        this.allQuizHistory = []; 
-        this.currentQIndex = 0;
+        app.innerHTML = `
+            ${timerUI}
+            <div style="display:flex; justify-content:space-between; color:var(--holo-cyan); font-family:var(--font-tech); font-size:0.8rem; margin-bottom:15px;">
+                <span>SEQ: ${state.index+1} / ${state.questions.length}</span>
+                <span>MODE: ${state.mode.toUpperCase()}</span>
+            </div>
+            <div class="q-display">${q.q}</div>
+            <div id="opts-area">
+                ${opts.map((o,i) => `<button class="opt-btn" onclick="check(this, '${o.replace(/'/g,"\\'")}','${q.a.replace(/'/g,"\\'")}', ${q.id})"><span style="color:var(--holo-cyan); margin-right:15px; font-weight:bold;">0${i+1}</span> ${o}</button>`).join('')}
+            </div>
+            <div style="display:flex; gap:15px; margin-top:30px;">
+                <button class="tech-btn danger" style="padding:10px; font-size:0.8rem;" onclick="renderMenu()">ABORT</button>
+                <div style="flex-grow:1;"></div>
+                ${aladdinBtn}
+                <button class="tech-btn" style="padding:10px; font-size:0.8rem;" onclick="next()">SKIP >></button>
+            </div>
+        `;
         
-        // Reset scores based on mode
-        if (this.simpleMode) {
-            this.score = 0;
-            this.ui.simpleScoreDisplay.innerText = "Score: 0";
-        } else {
-            this.xpScore = 0;
-            this.gamification.reset();
-        }
-        
-        this.streak = 0;
-        this.ui.score.innerText = '0';
-        this.ui.streak.innerText = '0';
-        this.ui.qTotal.innerText = this.questions.length;
-        this.showSection('quiz-challenge');
-        this.loadQuestion();
+        if(state.mode === 'challenge') startTimer();
+        drawPet('thinking');
+        document.getElementById('pet-mood').innerText = "ANALYZING";
     }
-    
-    startNewQuiz() {
-        this.ui.modal.classList.remove('active');
-        this.showSection('settings');
-    }
-    
-    clearHistory() {
-        if(confirm("Are you sure you want to clear all history, levels, and badges?")) {
-            this.gamification.reset();
-            this.ui.modal.classList.remove('active');
-            this.showSection('settings');
-        }
-    }
-    
-    endQuiz() {
-        clearInterval(this.timer);
-        this.showResults();
-    }
-    
-    showResults() {
-        const isSimple = this.simpleMode;
-        const finalScore = isSimple ? this.score : this.xpScore;
-        
-        document.getElementById('modal-title').innerText = this.questions.length > 0 ? "QUIZ ENDED" : "NO QUESTIONS";
-        document.getElementById('modal-score').innerText = finalScore;
-        
-        let feedback = "";
-        const totalQuestions = this.questions.length;
-        // Adjust calculation logic for display
-        const pct = totalQuestions > 0 ? (finalScore / (totalQuestions * 10)) : 0; 
-        
-        if(pct > 0.9) feedback = "Legendary Performance!";
-        else if(pct > 0.7) feedback = "Excellent Work.";
-        else if(pct > 0.5) feedback = "Good effort. Keep studying.";
-        else feedback = "Time to review notes.";
-        
-        document.getElementById('modal-feedback').innerText = feedback;
-        this.ui.modal.classList.add('active');
-        this.pet.setState('IDLE');
-    }
-    
-    showReview() {
-        this.ui.modal.classList.remove('active');
-        this.filterReview('all');
-        this.showSection('review-section');
-    }
-    
-    filterReview(type) {
-        this.ui.reviewContainer = document.getElementById('review-container');
-        this.ui.reviewContainer.innerHTML = '';
-        const list = type === 'all' ? this.allQuizHistory : this.allQuizHistory.filter(i => !i.isCorrect);
-        
-        if(list.length === 0) {
-            this.ui.reviewContainer.innerHTML = '<div style="text-align:center;">No questions to review.</div>';
-            return;
-        }
 
-        list.forEach((item, idx) => {
-            const div = document.createElement('div');
-            div.className = 'review-item';
-            let statusClass = item.isCorrect ? 'review-correct-text' : 'review-wrong-text';
-            let statusText = item.isCorrect ? 'Correct' : (item.userAnswer === 'Skipped' ? 'Skipped' : item.userAnswer);
-            
-            div.innerHTML = `
-                <div class="review-q">Q${idx+1}: ${item.q.q}</div>
-                <div class="review-stat ${statusClass}">Your Answer: ${statusText}</div>
-                <div class="review-stat review-ans-text">Correct Answer: ${item.q.a}</div>
-                <div class="review-rat">Rationale: ${item.q.r}</div>
-            `;
-            this.ui.reviewContainer.appendChild(div);
-        });
+    function renderCard(q) {
+        app.innerHTML = `
+            <div style="text-align:center; height:100%; display:flex; flex-direction:column; justify-content:center;">
+                <div style="font-family:var(--font-tech); color:var(--holo-cyan); margin-bottom:20px;">DATA CARD ${state.index+1}</div>
+                <div onclick="this.classList.toggle('flipped')" style="cursor:pointer; perspective:1000px; width:100%; height:300px;">
+                    <div style="position:relative; width:100%; height:100%; transition:transform 0.6s; transform-style:preserve-3d;" id="card-inner">
+                        <div style="position:absolute; width:100%; height:100%; backface-visibility:hidden; background:rgba(6,182,212,0.1); border:1px solid var(--holo-cyan); display:flex; align-items:center; justify-content:center; padding:30px; font-size:1.3rem;">
+                            ${q.q}
+                            <div style="position:absolute; bottom:10px; font-size:0.7rem; color:var(--text-dim);">[ CLICK TO DECRYPT ]</div>
+                        </div>
+                        <div style="position:absolute; width:100%; height:100%; backface-visibility:hidden; background:var(--holo-cyan); color:#000; transform:rotateY(180deg); display:flex; align-items:center; justify-content:center; padding:30px; font-size:1.4rem; font-weight:bold;">
+                            ${q.a}
+                        </div>
+                    </div>
+                </div>
+                <style>.flipped #card-inner { transform: rotateY(180deg); }</style>
+                <div style="margin-top:30px; display:flex; gap:20px; justify-content:center;">
+                    <button class="tech-btn danger" style="padding:10px;" onclick="renderMenu()">EXIT</button>
+                    <button class="tech-btn" style="padding:10px;" onclick="next()">NEXT DATA >></button>
+                </div>
+            </div>
+        `;
+        drawPet('neutral');
     }
-    
-    navQuestion(direction) {
-        if (this.isAnswering) return;
-        const newIndex = this.currentQIndex + direction;
-        if (newIndex >= 0 && newIndex < this.questions.length) {
-            this.currentQIndex = newIndex;
-            this.loadQuestion();
-        }
-    }
-    
-    giveHint() {
-        if(this.isAnswering) return;
-        const q = this.questions[this.currentQIndex];
-        const hint = `Think! It starts with "${q.a.charAt(0)}" and has ${q.a.length} letters.`;
-        this.ui.hintBubble.innerText = hint;
-        this.ui.hintBubble.classList.add('show');
-        setTimeout(() => {
-            this.ui.hintBubble.classList.remove('show');
-        }, 4000);
-    }
-    
-    loadQuestion() {
-        if (this.currentQIndex >= this.questions.length) {
-            this.showResults();
-            return;
-        }
-        const q = this.questions[this.currentQIndex];
-        this.isAnswering = false;
-        this.ui.qCurrent.innerText = this.currentQIndex + 1;
-        this.ui.question.innerText = q.q;
-        this.ui.skipBtn.style.display = 'inline-block';
-        this.ui.hintBubble.classList.remove('show');
-        
-        const ttsEnabled = document.getElementById('tts-enable').checked;
-        if(ttsEnabled) {
-            this.synth.cancel();
-            const u = new SpeechSynthesisUtterance(q.q);
-            u.rate = parseFloat(document.getElementById('tts-rate').value);
-            u.pitch = parseFloat(document.getElementById('tts-pitch').value);
-            this.synth.speak(u);
-        }
-        this.ui.options.innerHTML = '';
-        const shuffledOpts = [...q.opts].sort(() => 0.5 - Math.random());
-        shuffledOpts.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.innerText = opt;
-            btn.onclick = () => this.checkAnswer(btn, opt, q.a, q.r);
-            this.ui.options.appendChild(btn);
-        });
-        this.startTimer();
-    }
-    
-    startTimer() {
-        clearInterval(this.timer);
-        this.timeLeft = this.maxTime;
-        this.ui.bigTimer.innerText = Math.ceil(this.timeLeft);
-        this.ui.bigTimer.style.color = 'rgba(255,255,255,0.05)';
-        document.body.classList.remove('stress-mode');
-        this.startTime = Date.now();
-        this.timer = setInterval(() => {
-            this.timeLeft -= 0.1;
-            this.ui.bigTimer.innerText = Math.ceil(this.timeLeft);
-            if (this.timeLeft < (this.maxTime / 3)) {
-                document.body.classList.add('stress-mode');
-                this.ui.bigTimer.style.color = 'rgba(255, 0, 85, 0.2)';
-                this.pet.setState('PANIC');
-            }
-            if (this.timeLeft <= 0) {
-                clearInterval(this.timer);
-                this.handleTimeout();
-            }
-        }, 100);
-    }
-    
-    checkAnswer(btn, selected, correct, rationale) {
-        if (this.isAnswering) return;
-        this.isAnswering = true;
-        clearInterval(this.timer);
-        const isCorrect = selected === correct;
-        const timeTaken = (Date.now() - this.startTime) / 1000;
-        const allBtns = this.ui.options.children;
-        
-        // Record History
-        this.allQuizHistory.push({
-            q: this.questions[this.currentQIndex],
-            userAnswer: selected,
-            isCorrect: isCorrect
-        });
 
-        const stats = { totalAnswered: this.gamification.earnedBadges.length + 1, streak: this.streak, totalCorrect: 0, lastTimeUsed: timeTaken };
+    window.check = function(btn, sel, cor, id) {
+        clearInterval(timerRef);
+        document.querySelectorAll('.opt-btn').forEach(b => b.disabled=true);
         
-        if (isCorrect) {
+        if(sel === cor) {
             btn.classList.add('correct');
-            this.confetti.burst(window.innerWidth/2, window.innerHeight/2);
-            this.audio.playTone('correct');
-            this.pet.setState('HAPPY');
-            this.streak++;
-            
-            if (this.simpleMode) {
-                // Easy Scoring: +10 points
-                this.score += 10;
-                this.ui.score.innerText = this.score;
-                this.ui.simpleScoreDisplay.innerText = `Score: ${this.score}`;
-            } else {
-                // XP Scoring: +10 + streak bonus
-                this.xpScore += (10 + (this.streak * 2) + Math.max(0, Math.floor((this.maxTime - timeTaken))));
-                this.ui.score.innerText = this.xpScore;
-                this.gamification.addXP(20);
-            }
-
+            state.score++; state.streak++;
+            state.mastery[id] = Math.min((state.mastery[id]||0)+1, 5);
+            addXP(100 + (state.streak*10));
+            drawPet('happy');
+            if(isTTS) speak("Affirmative.");
         } else {
             btn.classList.add('wrong');
-            this.audio.playTone('wrong');
-            this.pet.setState('DIZZY');
-            this.streak = 0;
-            Array.from(allBtns).forEach(b => { if(b.innerText === correct) b.classList.add('correct'); });
+            state.streak = 0;
+            state.mastery[id] = Math.max((state.mastery[id]||0)-2, -5);
+            document.querySelectorAll('.opt-btn').forEach(b => {
+                if(b.innerText.includes(cor)) b.classList.add('correct');
+            });
+            drawPet('sad');
+            if(isTTS) speak("Negative. Correct answer identified.");
         }
         
-        this.ui.streak.innerText = this.streak;
-        document.body.classList.remove('stress-mode');
-        this.ui.fbTitle.innerText = isCorrect ? "Correct!" : "Incorrect";
-        this.ui.fbTitle.style.color = isCorrect ? "var(--success)" : "var(--accent)";
-        this.ui.fbText.innerText = rationale || `The correct answer is ${correct}.`;
-        this.ui.fbPanel.classList.add('show');
-        this.ui.skipBtn.style.display = 'none';
-        
-        if (!this.simpleMode) {
-            this.gamification.checkBadges(stats);
-        }
-
-        setTimeout(() => {
-            this.ui.fbPanel.classList.remove('show');
-            this.currentQIndex++;
-            this.loadQuestion();
-        }, 4000);
+        checkBadges();
+        save();
+        updateUI();
+        setTimeout(next, 2000);
     }
-    
-    skipQuestion() {
-        if (this.isAnswering) return;
-        this.isAnswering = true;
-        clearInterval(this.timer);
+
+    window.magic = function(cor) {
+        let btns = Array.from(document.querySelectorAll('.opt-btn'));
+        let wrongs = btns.filter(b => !b.innerText.includes(cor));
+        if(wrongs.length >= 2) {
+            for(let i=0; i<2; i++) {
+                let r = Math.floor(Math.random()*wrongs.length);
+                wrongs[r].classList.add('dimmed');
+                wrongs.splice(r,1);
+            }
+            if(!state.badges.survivor) { state.badges.survivor=true; save(); updateUI(); }
+        }
+    }
+
+    window.next = function() { state.index++; renderQuestion(); }
+
+    function renderEnd() {
+        clearInterval(timerRef);
+        app.innerHTML = `
+            <div style="text-align:center;">
+                <div style="font-size:3rem; color:var(--success-green); font-family:var(--font-tech);">SESSION COMPLETE</div>
+                <div style="font-size:5rem; font-weight:bold; margin:20px 0; color:white; text-shadow:0 0 20px var(--holo-cyan);">${state.score} / ${state.questions.length}</div>
+                <button class="tech-btn" onclick="renderMenu()">RETURN TO ROOT</button>
+            </div>
+        `;
+        startConfetti();
+        drawPet('happy');
+    }
+
+    // --- UTILS ---
+    function startTimer() {
+        let t = state.timeLeft;
+        let bar = document.getElementById('t-bar');
+        if(!bar) return;
+        bar.style.transition = `width ${t}s linear`;
+        setTimeout(() => bar.style.width = '0%', 10);
+        timerRef = setInterval(() => {
+            t--;
+            if(t<=0) { clearInterval(timerRef); document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true); drawPet('sad'); setTimeout(next,1500); }
+        }, 1000);
+    }
+
+    function addXP(n) {
+        state.xp += n;
+        if(state.xp >= state.level*1000) { state.level++; state.xp=0; }
+        updateUI();
+    }
+
+    function checkBadges() {
+        if(state.streak >= 5 && !state.badges.streak5) state.badges.streak5 = true;
+        if(state.streak >= 10 && !state.badges.streak10) state.badges.streak10 = true;
+    }
+
+    function updateUI() {
+        document.getElementById('level-num').innerText = state.level;
+        document.getElementById('xp-num').innerText = state.xp;
+        let pct = (state.xp / (state.level*1000)) * 100;
+        document.getElementById('xp-fill').style.width = pct+'%';
         
-        this.allQuizHistory.push({
-            q: this.questions[this.currentQIndex],
-            userAnswer: "Skipped",
-            isCorrect: false
+        let area = document.getElementById('badge-area');
+        area.innerHTML = '';
+        let bList = [
+            {id:'streak5', ic:'🔥'}, {id:'streak10', ic:'🎯'}, {id:'survivor', ic:'🧞'}
+        ];
+        bList.forEach(b => {
+            let d = document.createElement('div');
+            d.className = `badge-slot ${state.badges[b.id] ? 'unlocked' : ''}`;
+            d.innerText = b.ic;
+            area.appendChild(d);
         });
+    }
 
-        if (this.simpleMode) {
-            this.score = Math.max(0, this.score - 5);
-            this.ui.score.innerText = this.score;
-            this.ui.simpleScoreDisplay.innerText = `Score: ${this.score}`;
-        } else {
-            // XP Penalty? Usually XP systems don't penalize, but we can reset streak
-            this.xpScore = Math.max(0, this.xpScore - 5);
-            this.ui.score.innerText = this.xpScore;
+    function speak(txt) {
+        let u = new SpeechSynthesisUtterance(txt);
+        u.rate = 1.2; u.pitch = 0.9;
+        window.speechSynthesis.speak(u);
+    }
+
+    window.toggleFullScreen = function() {
+        if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else if(document.exitFullscreen) document.exitFullscreen();
+    }
+
+    document.getElementById('tts-toggle').addEventListener('change', e => isTTS = e.target.checked);
+
+    // --- CANVAS DRAWING ---
+    const pCtx = document.getElementById('pet-canvas').getContext('2d');
+    function drawPet(mood) {
+        pCtx.clearRect(0,0,140,140);
+        let color = mood==='happy' ? '#10b981' : mood==='sad' ? '#ef4444' : '#06b6d4';
+        
+        pCtx.strokeStyle = color; pCtx.lineWidth = 3;
+        
+        // Rings
+        pCtx.beginPath(); pCtx.arc(70,70,60,0,Math.PI*2); pCtx.stroke();
+        pCtx.beginPath(); pCtx.arc(70,70,40,0,Math.PI*2); pCtx.stroke();
+        
+        // Core
+        pCtx.fillStyle = color;
+        pCtx.beginPath(); pCtx.arc(70,70,15,0,Math.PI*2); pCtx.fill();
+        
+        // Data bits
+        if(mood === 'thinking') {
+             pCtx.fillStyle = '#fff';
+             pCtx.font = "10px monospace";
+             pCtx.fillText("PROCESSING...", 35, 74);
         }
         
-        this.streak = 0;
-        this.ui.streak.innerText = this.streak;
-        this.pet.setState('DIZZY');
-        this.ui.fbTitle.innerText = "Skipped";
-        this.ui.fbTitle.style.color = "var(--text-muted)";
-        this.ui.fbText.innerText = "You skipped this question. (-5 pts)";
-        this.ui.fbPanel.classList.add('show');
-        this.ui.skipBtn.style.display = 'none';
-        setTimeout(() => {
-            this.ui.fbPanel.classList.remove('show');
-            this.currentQIndex++;
-            this.loadQuestion();
-        }, 2000);
+        let t = document.getElementById('pet-mood');
+        if(t) {
+            t.innerText = mood.toUpperCase();
+            t.style.color = color;
+        }
     }
-    
-    handleTimeout() {
-        this.isAnswering = true;
-        this.streak = 0;
-        this.ui.streak.innerText = this.streak;
 
-        this.allQuizHistory.push({
-            q: this.questions[this.currentQIndex],
-            userAnswer: "Timed Out",
-            isCorrect: false
+    // --- CONFETTI ---
+    function startConfetti() {
+        const c = document.getElementById('confetti-c');
+        const cx = c.getContext('2d');
+        c.width = window.innerWidth; c.height = window.innerHeight;
+        let ps = [];
+        for(let i=0; i<100; i++) ps.push({x:Math.random()*c.width, y:Math.random()*c.height-c.height, c:`hsl(${Math.random()*360},100%,50%)`, v:Math.random()*5+2});
+        function loop() {
+            cx.clearRect(0,0,c.width,c.height);
+            ps.forEach(p => { p.y+=p.v; cx.fillStyle=p.c; cx.fillRect(p.x,p.y,5,5); });
+            requestAnimationFrame(loop);
+        }
+        loop();
+    }
+
+    // --- CURSOR ---
+    function initCursor() {
+        let dot = document.getElementById('cursor-dot');
+        let ring = document.getElementById('cursor-ring');
+        document.addEventListener('mousemove', e => {
+            dot.style.left = e.clientX+'px'; dot.style.top = e.clientY+'px';
+            ring.style.left = e.clientX+'px'; ring.style.top = e.clientY+'px';
         });
-
-        this.pet.setState('DIZZY');
-        const q = this.questions[this.currentQIndex];
-        Array.from(this.ui.options.children).forEach(b => { if(b.innerText === q.a) b.classList.add('correct'); });
-        this.ui.fbTitle.innerText = "Time's Up!";
-        this.ui.fbTitle.style.color = "var(--accent)";
-        this.ui.fbText.innerText = `The correct answer was ${q.a}. ${q.r}`;
-        this.ui.fbPanel.classList.add('show');
-        this.ui.skipBtn.style.display = 'none';
-        setTimeout(() => {
-            this.ui.fbPanel.classList.remove('show');
-            this.currentQIndex++;
-            this.loadQuestion();
-        }, 4000);
+        document.addEventListener('mousedown', () => ring.style.transform = "translate(-50%, -50%) scale(0.8)");
+        document.addEventListener('mouseup', () => ring.style.transform = "translate(-50%, -50%) scale(1)");
     }
-}
 
-class FlashcardApp {
-    constructor() {
-        this.cards = [...questionBank];
-        this.idx = 0;
-        this.front = document.getElementById('fc-term');
-        this.back = document.getElementById('fc-def');
-    }
-    init() { this.render(); }
-    render() {
-        if (this.cards.length === 0) return;
-        const card = this.cards[this.idx];
-        this.front.innerText = card.q;
-        this.back.innerText = card.a + (card.r ? `\n\n(Rationale: ${card.r})` : "");
-        document.querySelector('.flashcard-inner').classList.remove('flipped');
-    }
-    next() { this.idx = (this.idx + 1) % this.cards.length; this.render(); }
-    prev() { this.idx = (this.idx - 1 + this.cards.length) % this.cards.length; this.render(); }
-}
-
-// Initialize
-const app = new QuizApp();
-const flashcardApp = new FlashcardApp();
-app.showSection('settings');
+    init();
 </script>
 </body>
 </html>
