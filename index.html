@@ -91,36 +91,6 @@
             100% { transform: translateY(-50px) scale(0.5); opacity: 0; }
         }
 
-        /* --- Floating Action Button (Start Challenge) --- */
-        #fab-start {
-            position: fixed;
-            bottom: 100px; /* Moved UP from bottom */
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            background: var(--success);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            box-shadow: 0 4px 20px rgba(0, 255, 136, 0.4);
-            z-index: 90;
-            cursor: pointer;
-            transition: transform 0.3s, background 0.3s;
-            animation: pulse-btn 2s infinite;
-        }
-        
-        #fab-start:hover {
-            transform: scale(1.1) rotate(10deg);
-        }
-
-        @keyframes pulse-btn {
-            0% { box-shadow: 0 0 0 rgba(0, 255, 136, 0); }
-            50% { box-shadow: 0 0 20px rgba(0, 255, 136, 0.6); }
-            100% { box-shadow: 0 0 0 rgba(0, 255, 136, 0); }
-        }
-
         /* --- Header --- */
         header {
             background: rgba(20, 20, 31, 0.95);
@@ -271,71 +241,7 @@
         }
 
         /* --- Quiz Interface --- */
-        .quiz-hud {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 10px;
-        }
-
-        /* NEW: Top Stats Bar for Level/XP */
-        .hud-stats-bar {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--primary);
-            border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--primary);
-            font-weight: bold;
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
-        }
-        .hud-level { font-size: 1.2rem; margin-right: 15px; }
-        .hud-xp { flex: 1; max-width: 300px; display: flex; align-items: center; gap: 10px; }
-        .hud-xp-bar { height: 8px; background: #333; border-radius: 4px; flex: 1; overflow: hidden; }
-        .hud-xp-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.5s; }
-
-        /* NEW: Power Up UI */
-        .powerup-container {
-            position: absolute;
-            top: 80px;
-            right: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 50;
-        }
-        .powerup-btn {
-            background: var(--warning);
-            color: #000;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 0 10px var(--warning);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: 0.2s;
-            opacity: 0.5;
-            pointer-events: none; /* Disabled by default */
-        }
-        .powerup-btn.active {
-            opacity: 1;
-            pointer-events: auto;
-            cursor: pointer;
-            transform: scale(1.1);
-        }
-        .powerup-btn:active { transform: scale(0.95); }
-        .powerup-key {
-            background: #333;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-        }
-
+        .quiz-hud { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 10px; }
         .quiz-controls button {
             background: #333; border: none; color: #fff; padding: 10px 15px;
             border-radius: 4px; margin-left: 5px;
@@ -366,33 +272,33 @@
             background: rgba(255,255,255,0.05); border: 2px solid #333; padding: 1.5rem;
             color: white; font-size: 1.1rem; border-radius: 8px;
             transition: 0.2s; text-align: left; position: relative; overflow: hidden;
-            min-height: 60px; /* Touch friendly */
+            min-height: 60px;
         }
         .option-btn:hover { border-color: var(--primary); background: rgba(0, 243, 255, 0.05); }
         .option-btn.correct { background: rgba(0, 255, 136, 0.15); border-color: var(--success); }
         .option-btn.wrong { background: rgba(255, 0, 85, 0.15); border-color: var(--accent); animation: shake 0.4s; }
 
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
         .quiz-nav {
             display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; position: relative; z-index: 1; flex-wrap: wrap;
         }
-        /* NEW: Navigation Arrows */
         .btn-nav {
             background: var(--panel-bg); border: 1px solid var(--primary); color: var(--primary);
             padding: 12px 20px; border-radius: 4px; font-weight: bold;
-            flex: 1; display: flex; align-items: center; gap: 10px;
+            flex: 1;
         }
-        .btn-nav::before {
-            content: '';
-            display: inline-block;
-            width: 0; height: 0;
-            border-top: 6px solid var(--primary);
-            border-right: 6px solid transparent;
-            transition: 0.2s;
-        }
-        .btn-nav.prev::before { transform: rotate(135deg); }
-        .btn-nav.next::before { transform: rotate(-45deg); }
         .btn-nav:hover { background: var(--primary); color: #000; }
-        .btn-nav:hover::before { border-top-color: #000; }
+
+        .nav-hint {
+            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+            font-size: 0.8rem; color: var(--text-muted);
+            text-align: center; width: 100%; opacity: 0.6;
+        }
 
         /* --- Aladdin Hint --- */
         #aladdin-container {
@@ -416,7 +322,7 @@
         }
         .hint-bubble.show { display: block; opacity: 1; }
 
-        /* --- Feedback Panel --- */
+        /* --- Feedback Panel (Enhanced for Easy Scoring) --- */
         .feedback-panel {
             position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(150%);
             width: 90%; max-width: 600px; background: var(--panel-bg);
@@ -426,7 +332,28 @@
         }
         .feedback-panel.show { transform: translateX(-50%) translateY(0); }
         .feedback-title { font-weight: bold; font-size: 1.2rem; margin-bottom: 0.5rem; }
-        .rationale-text { color: var(--text-muted); line-height: 1.5; }
+        
+        /* Scoring Breakdown Styles */
+        .score-breakdown {
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .score-row { display: flex; justify-content: space-between; }
+        .score-val { font-weight: bold; color: var(--success); }
+        .streak-multiplier { 
+            color: var(--warning); 
+            font-weight: 900; 
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+        }
+
+        .rationale-text { color: var(--text-muted); line-height: 1.5; font-size: 0.95rem; border-top: 1px solid #333; padding-top: 10px; }
 
         /* --- Review Section --- */
         .review-list { max-width: 800px; margin: 0 auto; }
@@ -456,16 +383,15 @@
 
         /* --- Pet --- */
         #pet-game {
-            position: fixed; bottom: 20px; right: 100px; /* Shifted left to make room for FAB */
-            width: 100px; height: 100px;
+            position: fixed; bottom: 20px; right: 20px; width: 120px; height: 120px;
             background: rgba(20, 20, 31, 0.9); border: 2px solid var(--success);
             border-radius: 50%; display: flex; justify-content: center; align-items: center;
             box-shadow: 0 0 20px rgba(0,0,0,0.8); z-index: 50;
         }
-        #pet-canvas { width: 80px; height: 80px; }
+        #pet-canvas { width: 100px; height: 100px; }
         .pet-status {
             position: absolute; bottom: -25px; width: 150px; text-align: center;
-            font-size: 0.7rem; color: var(--text-muted); left: -25px;
+            font-size: 0.8rem; color: var(--text-muted); left: -15px;
         }
 
         /* --- Modals --- */
@@ -494,30 +420,25 @@
         .btn-danger:hover { background: #cc0044; }
 
         /* --- RESPONSIVE MEDIA QUERIES --- */
+        
         @media (max-width: 1024px) {
             .app-container { flex-direction: column; }
             nav { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #333; flex-direction: row; overflow-x: auto; padding: 0.5rem; order: 1; }
-                .stats-panel { display: none; }
-                .nav-btn span { display: none; }
-                .nav-btn::after { content: attr(data-icon); }
-                main { order: 2; }
+            .stats-panel { display: none; }
+            .nav-btn span { display: none; }
+            .nav-btn::after { content: attr(data-icon); }
+            main { order: 2; }
         }
 
         @media (max-width: 768px) {
             .big-timer-overlay { font-size: 8rem; }
             .big-rotating-title { font-size: 1.2rem; }
-            #pet-game { width: 60px; height: 60px; bottom: 10px; right: 10px; }
-            #pet-canvas { width: 50px; height: 50px; }
-            #aladdin-container { bottom: 80px; left: 10px; transform: scale(0.8); }
+            #pet-game { width: 80px; height: 80px; }
+            #pet-canvas { width: 60px; height: 60px; }
+            #aladdin-container { bottom: 90px; left: 10px; }
             .question-text { font-size: 1.1rem; }
             .options-grid { grid-template-columns: 1fr; }
-            .hud-stats-bar { flex-direction: column; gap: 5px; padding: 8px; }
-            .hud-level { font-size: 1rem; margin-right: 0; }
-            .hud-xp { width: 100%; }
-            .powerup-container { top: auto; bottom: 80px; right: 10px; }
-            /* Hide FAB on mobile if in settings, keep visible for quick restart */
-            #fab-start { bottom: 20px; right: 80px; width: 50px; height: 50px; font-size: 24px; }
-            
+            .score-breakdown { font-size: 0.8rem; padding: 5px; }
             .nav-btn { flex-direction: column; padding: 8px; justify-content: center; }
             .nav-btn span { display: block; font-size: 0.8rem; }
             
@@ -527,11 +448,8 @@
 </head>
 <body>
 
-<!-- Custom Cursor -->
+<!-- Custom Cursor (Hidden on touch devices via CSS) -->
 <div id="custom-cursor" class="cursor-shape-text">AMER ALSHARIF</div>
-
-<!-- FAB Start Button (Moved UP) -->
-<div id="fab-start" onclick="app.initQuiz()">▶</div>
 
 <!-- Aladdin Hint -->
 <div id="aladdin-container">
@@ -539,7 +457,6 @@
     <div id="aladdin-avatar" onclick="app.giveHint()" data-icon="🧞‍♂️">🧞‍♂️</div>
     <div style="color: var(--warning); font-size: 0.8rem; font-weight: bold; margin-top: 5px;">CLICK FOR HINT</div>
 </div>
-
 <canvas id="confetti-canvas"></canvas>
 
 <header>
@@ -617,24 +534,13 @@
                 </div>
             </div>
             <div style="text-align:center; margin-top:2rem;">
-                <p style="color:var(--text-muted); margin-bottom:1rem;">Or use the floating button to start instantly!</p>
                 <button class="btn-main" onclick="app.initQuiz()">Start Challenge</button>
             </div>
         </section>
 
         <!-- Quiz Section -->
         <section id="quiz-challenge" class="section">
-            
-            <!-- NEW: Top HUD for Level/XP -->
-            <div class="hud-stats-bar">
-                <div class="hud-level">LVL <span id="hud-lvl-num">1</span></div>
-                <div class="hud-xp">
-                    <div style="width: 50px;">XP</div>
-                    <div class="hud-xp-bar"><div class="hud-xp-fill" id="hud-xp-fill"></div></div>
-                    <div style="width: 50px; text-align: right;" id="hud-xp-text">0/100</div>
-                </div>
-            </div>
-
+            <div class="nav-hint">Use ⬆️ ⬇️ Arrow Keys or Mouse Wheel to Navigate</div>
             <div class="quiz-hud">
                 <div>Score: <span id="score" style="color:var(--success); font-weight:bold;">0</span> | Streak: <span id="streak" style="color:var(--warning); font-weight:bold;">0</span></div>
                 <div class="quiz-controls">
@@ -646,14 +552,6 @@
                 Question <span id="q-current">1</span>/<span id="q-total">20</span>
             </div>
 
-            <!-- NEW: Power Up UI -->
-            <div class="powerup-container">
-                <button id="btn-double-xp" class="powerup-btn" onclick="app.activatePowerUp()">
-                    <span>2x SCORE</span>
-                    <span class="powerup-key">[1]</span>
-                </button>
-            </div>
-
             <div class="big-timer-overlay" id="big-timer">30</div>
 
             <div class="question-box">
@@ -663,9 +561,9 @@
             <div class="options-grid" id="options-container"></div>
             
             <div class="quiz-nav">
-                <button class="btn-nav prev" onclick="app.navQuestion(-1)" title="Previous Question">Previous</button>
-                <button class="btn-skip" onclick="app.skipQuestion()" id="skip-btn" style="margin:0; flex:0 0 auto;">Skip (-5 pts)</button>
-                <button class="btn-nav next" onclick="app.navQuestion(1)" title="Next Question">Next</button>
+                <button class="btn-nav" onclick="app.navQuestion(-1)">Previous</button>
+                <button class="btn-skip" onclick="app.skipQuestion()" id="skip-btn" style="margin:0; flex: 0 0 auto;">Skip (-5 pts)</button>
+                <button class="btn-nav" onclick="app.navQuestion(1)">Next</button>
             </div>
         </section>
 
@@ -712,6 +610,9 @@
 <!-- Rationale Feedback Panel -->
 <div class="feedback-panel" id="feedback-panel">
     <div class="feedback-title" id="fb-title">Correct!</div>
+    <div class="score-breakdown" id="score-breakdown" style="display:none;">
+        <!-- Content injected via JS -->
+    </div>
     <div class="rationale-text" id="fb-text">Explanation goes here.</div>
 </div>
 
@@ -736,6 +637,7 @@
 const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 const cursor = document.getElementById('custom-cursor');
 
+// Hide cursor logic on touch devices
 if (isTouchDevice) {
     cursor.style.display = 'none';
 }
@@ -750,9 +652,12 @@ const settings = {
 
 function updateCursorStyle() {
     const isVisible = settings.vis.value === 'visible';
+    // Only show if not touch device AND setting is visible
     cursor.style.display = (isVisible && !isTouchDevice) ? 'flex' : 'none';
+    
     cursor.className = '';
     cursor.classList.add(settings.shape.value);
+    
     cursor.style.fontSize = settings.size.value + 'px';
     cursor.style.color = settings.color.value;
     cursor.style.borderColor = settings.color.value;
@@ -818,26 +723,21 @@ class AudioController {
             gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.4);
             osc.start(); osc.stop(this.ctx.currentTime + 0.4);
-        } else if (type === 'powerup') {
-            // Magic sound for power up
-            osc.type = 'triangle'; osc.frequency.setValueAtTime(400, this.ctx.currentTime);
-            osc.frequency.linearRampToValueAtTime(800, this.ctx.currentTime + 0.2);
-            gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.5);
-            osc.start(); osc.stop(this.ctx.currentTime + 0.5);
         }
     }
 }
 
 /**
- * CONFETTI SYSTEM
+ * CONFETTI SYSTEM (Cross-Platform Canvas)
  */
 class ConfettiSystem {
     constructor() {
         this.canvas = document.getElementById('confetti-canvas');
         this.ctx = this.canvas.getContext('2d');
-        this.particles = []; this.resize();
-        window.addEventListener('resize', () => this.resize()); this.animate();
+        this.particles = []; 
+        this.resize();
+        window.addEventListener('resize', () => this.resize()); 
+        this.animate();
     }
     resize() {
         const dpr = window.devicePixelRatio || 1;
@@ -848,8 +748,8 @@ class ConfettiSystem {
         this.canvas.style.height = window.innerHeight + 'px';
     }
     burst(x, y) {
-        const colors = ['#00f3ff', '#bd00ff', '#ff0055', '#00ff88', '#ffcc00']; // Added yellow for powerup
-        for (let i = 0; i < 60; i++) {
+        const colors = ['#00f3ff', '#bd00ff', '#ff0055', '#00ff88'];
+        for (let i = 0; i < 50; i++) {
             this.particles.push({
                 x: x || window.innerWidth / 2, y: y || window.innerHeight / 2,
                 vx: (Math.random() - 0.5) * 20, vy: (Math.random() - 0.5) * 20,
@@ -909,29 +809,22 @@ class Gamification {
         this.updateUI();
     }
     updateUI() {
-        // Update Sidebar
         document.getElementById('level-num').innerText = this.level;
         document.getElementById('xp-text').innerText = `${this.xp}/${this.level * 100} XP`;
         document.getElementById('xp-fill').style.width = `${(this.xp / (this.level * 100)) * 100}%`;
-
-        // Update Top HUD
-        document.getElementById('hud-lvl-num').innerText = this.level;
-        const currentReq = this.level * 100;
-        document.getElementById('hud-xp-text').innerText = `${this.xp}/${currentReq}`;
-        document.getElementById('hud-xp-fill').style.width = `${(this.xp / currentReq) * 100}%`;
     }
 }
 
-// --- GENERATING 165 QUESTIONS ---
+// --- GENERATING 165 QUESTIONS (Filling) ---
 const baseQuestions = [
     { q: "Dysphagia refers to:", a: "Difficulty swallowing", opts: ["Difficulty swallowing", "Heartburn", "Loss of appetite", "Vomiting blood"], r: "Dysphagia is defined as difficulty swallowing." },
     { q: "Pyrosis (heartburn) is caused by:", a: "Reflux of gastric acid into esophagus and stomach", opts: ["Inflammation of liver", "Reflux of gastric acid into esophagus and stomach", "Appendicitis", "Spleen enlargement"], r: "Pyrosis results from reflux of gastric acid." },
-    { q: "The liver is located in which quadrant?", a: "Right Upper Quadrant (RUQ)", opts: ["RUQ", "RLQ", "LUQ", "Midline"], r: "Anatomically, liver resides in the Right Upper Quadrant." },
-    { q: "The appendix is located in which quadrant?", a: "Right Lower Quadrant (RLQ)", opts: ["RUQ", "RLQ", "LUQ", "Midline"], r: "The appendix is found in the Right Lower Quadrant." },
-    { q: "The spleen is located in which quadrant?", a: "Left Upper Quadrant (LUQ)", opts: ["RUQ", "RLQ", "LUQ", "Midline"], r: "The spleen is situated in the Left Upper Quadrant." },
+    { q: "The liver is located in which quadrant?", a: "Right Upper Quadrant (RUQ)", opts: ["RUQ", "RLQ", "LUQ", "Midline"], r: "Anatomically, liver resides in Right Upper Quadrant." },
+    { q: "The appendix is located in which quadrant?", a: "Right Lower Quadrant (RLQ)", opts: ["RUQ", "RLQ", "LUQ", "Midline"], r: "The appendix is found in Right Lower Quadrant." },
+    { q: "The spleen is located in which quadrant?", a: "Left Upper Quadrant (LUQ)", opts: ["RUQ", "RLQ", "LUQ", "Midline"], r: "The spleen is situated in Left Upper Quadrant." },
     { q: "The aorta is located:", a: "Midline", opts: ["RUQ", "RLQ", "LUQ", "Midline"], r: "The abdominal aorta runs midline." },
     { q: "Hematemesis may indicate:", a: "Stomach or duodenal ulcers and esophageal varices", opts: ["Heartburn", "Stomach or duodenal ulcers and esophageal varices", "Liver enlargement", "Appendicitis"], r: "Vomiting blood (hematemesis) is a sign of ulcers or varices." },
-    { q: "Anorexia is defined as:", a: "Loss of appetite", opts: ["Nausea", "Vomiting", "Loss of appetite", "Diarrhea"], r: "Anorexia is the clinical term for loss of appetite." },
+    { q: "Anorexia is defined as:", a: "Loss of appetite", opts: ["Nausea", "Vomiting", "Loss of appetite", "Diarrhea"], r: "Anorexia is clinical term for loss of appetite." },
     { q: "The umbilicus is normally:", a: "Midline and inverted", opts: ["Midline and everted", "Midline and inverted", "Deviated to the left", "Deviated to the right"], r: "A normal umbilicus is midline and slightly inverted." },
     { q: "Hyperactive bowel sounds are:", a: "Loud, high-pitched, rushing, tinkling sounds", opts: ["Soft, low-pitched, infrequent", "Loud, high-pitched, rushing, tinkling sounds", "Absent", "Only heard in RLQ"], r: "Hyperactive sounds are loud, high-pitched, and rushing." },
     { q: "Hypoactive or absent bowel sounds occur with:", a: "Abdominal surgery or peritoneal inflammation", opts: ["Normal digestion", "Abdominal surgery or peritoneal inflammation", "Heartburn", "Liver enlargement"], r: "Ileus or peritonitis causes hypoactive or absent sounds." },
@@ -940,13 +833,13 @@ const baseQuestions = [
     { q: "Costovertebral angle (CVA) tenderness is assessed by:", a: "Indirect fist percussion over 12th rib at CVA", opts: ["Direct finger palpation", "Indirect fist percussion over 12th rib at CVA", "Deep palpation at midline", "Auscultation"], r: "CVA tenderness is checked by indirect fist percussion." },
     { q: "Deep palpation of the abdomen should be:", a: "5–8 cm", opts: ["2–3 cm", "5–8 cm", "10–12 cm", "Not recommended"], r: "Deep palpation typically reaches 5–8 cm." },
     { q: "Inspiratory Arrest (Murphy Sign) indicates:", a: "Inflammation of the gallbladder (cholecystitis)", opts: ["Normal liver function", "Inflammation of the gallbladder (cholecystitis)", "Spleen enlargement", "Appendicitis"], r: "Murphy's sign suggests acute cholecystitis." },
-    { q: "Nocturia in a patient with heart failure occurs because:", a: "Recumbency at night promotes fluid resorption and excretion", opts: ["The person drinks more fluids at night", "Recumbency at night promotes fluid resorption and excretion", "Kidney function decreases at night", "Heart rate increases at night"], r: "Lying down allows peripheral fluid to return to circulation and be filtered by kidneys." },
+    { q: "Nocturia in a patient with heart failure occurs because:", a: "Recumbency at night promotes fluid resorption and excretion", opts: ["Drinks more fluids at night", "Recumbency at night promotes fluid resorption and excretion", "Kidney function decreases at night", "Heart rate increases at night"], r: "Lying down allows peripheral fluid to return to circulation and be filtered by kidneys." },
     { q: "When palpating the carotid arteries, you should:", a: "Palpate only one carotid artery at a time", opts: ["Palpate both simultaneously", "Palpate only one carotid artery at a time", "Avoid palpation completely", "Palpate lightly at the same time"], r: "Palpating both can compromise cerebral blood flow." },
     { q: "The optimal position to inspect the jugular venous pulse is:", a: "Supine at 30–45 degrees", opts: ["Standing upright", "Supine at 0 degrees", "Supine at 30–45 degrees", "Sitting fully upright"], r: "30-45 degrees optimizes JVP visibility." },
     { q: "Normal jugular venous pulsation is:", a: "2 cm or less above the sternal angle", opts: ["1 cm above the sternal angle", "2 cm or less above the sternal angle", "3–4 cm above the sternal angle", "Not visible"], r: "JVP >3cm is elevated; normal is 2cm or less." },
     { q: "The aortic valve area is best auscultated at:", a: "Second right interspace", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Aortic area is the 2nd right intercostal space." },
     { q: "The pulmonic valve area is auscultated at:", a: "Second left interspace", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Pulmonic area is the 2nd left intercostal space." },
-    { q: "The tricuspid valve area is located at:", a: "Left lower sternal border", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Tricuspid area is left lower sternal border." },
+    { q: "The tricuspid valve area is located at:", a: "Left lower sternal border", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Tricuspid area is the left lower sternal border." },
     { q: "The mitral valve area is located at:", a: "Fifth interspace at left midclavicular line", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Mitral area is the apex (5th intercostal, midclavicular)." },
     { q: "The first heart sound (S1) is caused by:", a: "Closure of the AV valves", opts: ["Closure of the semilunar valves", "Closure of the AV valves", "Ventricular filling", "Atrial contraction"], r: "S1 is the 'lub' caused by AV (Mitral/Tricuspid) closure." },
     { q: "The second heart sound (S2) is caused by:", a: "Closure of the semilunar valves", opts: ["Closure of the semilunar valves", "Closure of the AV valves", "Ventricular filling", "Atrial contraction"], r: "S2 is the 'dub' caused by Aortic/Pulmonic valve closure." },
@@ -1068,8 +961,11 @@ class PetGame {
         this.ctx = this.canvas.getContext('2d');
         this.statusMsg = document.getElementById('pet-msg');
         this.resize();
-        this.state = 'IDLE'; this.pulseRate = 60; this.pulseColor = '#00ff88';
-        window.addEventListener('resize', () => this.resize()); this.animate();
+        this.state = 'IDLE'; 
+        this.pulseRate = 60; 
+        this.pulseColor = '#00ff88';
+        window.addEventListener('resize', () => this.resize()); 
+        this.animate();
     }
     resize() {
         const dpr = window.devicePixelRatio || 1;
@@ -1105,8 +1001,10 @@ class PetGame {
         ctx.arc(cx, cy, 20 * scale, 0, Math.PI * 2);
         ctx.fill();
         
-        ctx.shadowBlur = 20; ctx.shadowColor = this.pulseColor;
-        ctx.stroke(); ctx.shadowBlur = 0;
+        ctx.shadowBlur = 20; 
+        ctx.shadowColor = this.pulseColor;
+        ctx.stroke(); 
+        ctx.shadowBlur = 0;
         
         ctx.strokeStyle = this.pulseColor;
         ctx.lineWidth = 2;
@@ -1168,11 +1066,6 @@ class QuizApp {
         this.maxTime = 30;
         this.isAnswering = false;
         this.startTime = 0;
-        
-        // NEW: Easy Scoring / Power Up State
-        this.powerUpAvailable = true; 
-        this.powerUpActive = false;
-
         this.ui = {
             question: document.getElementById('question-text'),
             options: document.getElementById('options-container'),
@@ -1185,33 +1078,65 @@ class QuizApp {
             fbPanel: document.getElementById('feedback-panel'),
             fbTitle: document.getElementById('fb-title'),
             fbText: document.getElementById('fb-text'),
+            fbScore: document.getElementById('score-breakdown'),
             skipBtn: document.getElementById('skip-btn'),
-            hintBubble: document.getElementById('hint-bubble'),
-            fabStart: document.getElementById('fab-start'),
-            btnDoubleXP: document.getElementById('btn-double-xp')
+            hintBubble: document.getElementById('hint-bubble')
         };
+
+        // Add Easy Scrolling Listeners
+        this.setupEasyScrolling();
     }
+
+    setupEasyScrolling() {
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            // Only navigate if in quiz section and not answering
+            if(document.getElementById('quiz-challenge').classList.contains('active') && !this.isAnswering) {
+                if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                    e.preventDefault(); // Prevent scrolling
+                    this.navQuestion(1);
+                } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    this.navQuestion(-1);
+                }
+            }
+        });
+
+        // Mouse Wheel Navigation
+        document.getElementById('quiz-challenge').addEventListener('wheel', (e) => {
+            if (this.isAnswering) return;
+            // Debounce to prevent skipping too many questions
+            if (this.wheelTimeout) return;
+
+            if (e.deltaY < 0) {
+                // Scrolling Up -> Previous
+                e.preventDefault();
+                this.navQuestion(-1);
+            } else if (e.deltaY > 0) {
+                // Scrolling Down -> Next
+                e.preventDefault();
+                this.navQuestion(1);
+            }
+            
+            // Reset timeout
+            this.wheelTimeout = setTimeout(() => { this.wheelTimeout = null; }, 200);
+        }, { passive: false }); // Passive false allows preventDefault
+    }
+
     showSection(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         
-        // Responsive logic
+        // Responsive logic for nav highlighting
         if (id === 'review-section') document.querySelectorAll('.nav-btn')[0].classList.add('active'); 
-        else if (id === 'quiz-challenge') document.querySelectorAll('.nav-btn')[0].classList.add('active');
-        else if (id === 'flashcards') document.querySelectorAll('.nav-btn')[1].classList.add('active');
+        else if (id === 'quiz-challenge') document.querySelectorAll('.nav-btn')[0].classList.add('active'); 
+        else if (id === 'flashcards') document.querySelectorAll('.nav-btn')[1].classList.add('active'); 
         else document.querySelectorAll('.nav-btn')[2].classList.add('active');
 
         if(id === 'flashcards') flashcardApp.init();
-        
-        // Show/Hide FAB
-        if (id === 'quiz-challenge') {
-            this.ui.fabStart.style.display = 'none';
-            document.getElementById('aladdin-container').style.display = 'flex';
-        } else {
-            this.ui.fabStart.style.display = 'flex';
-            document.getElementById('aladdin-container').style.display = 'none';
-        }
+        if(id === 'quiz-challenge') document.getElementById('aladdin-container').style.display = 'flex';
+        else document.getElementById('aladdin-container').style.display = 'none';
     }
     initQuiz() {
         const count = parseInt(document.getElementById('q-count').value) || 20;
@@ -1222,13 +1147,6 @@ class QuizApp {
         this.currentQIndex = 0;
         this.score = 0;
         this.streak = 0;
-        
-        // NEW: Reset Power Up
-        this.powerUpAvailable = true;
-        this.powerUpActive = false;
-        this.ui.btnDoubleXP.classList.remove('active');
-        this.ui.btnDoubleXP.title = "Press [1] for 2x Score";
-
         this.ui.score.innerText = '0';
         this.ui.streak.innerText = '0';
         this.ui.qTotal.innerText = this.questions.length;
@@ -1262,33 +1180,19 @@ class QuizApp {
         document.getElementById('modal-feedback').innerText = feedback;
         this.ui.modal.classList.add('active');
         this.pet.setState('IDLE');
-        this.ui.fabStart.style.display = 'flex';
     }
     showReview() {
         this.ui.modal.classList.remove('active');
         this.filterReview('all');
         this.showSection('review-section');
     }
-    
-    // NEW: Activate Power Up
-    activatePowerUp() {
-        if (!this.powerUpAvailable || this.isAnswering) return;
-        this.powerUpActive = true;
-        this.powerUpAvailable = false;
-        this.ui.btnDoubleXP.classList.add('active');
-        this.ui.btnDoubleXP.title = "ACTIVE!";
-        this.audio.playTone('powerup');
-        // Burst yellow confetti
-        this.confetti.burst(window.innerWidth/2, window.innerHeight/2);
-    }
-
     filterReview(type) {
         this.ui.reviewContainer = document.getElementById('review-container');
         this.ui.reviewContainer.innerHTML = '';
         const list = type === 'all' ? this.allQuizHistory : this.allQuizHistory.filter(i => !i.isCorrect);
         
         if(list.length === 0) {
-            this.ui.reviewContainer.innerHTML = '<div style="text-align:center;">No questions to review.</div>';
+            this.ui.reviewContainer.innerHTML = '<div style="text-align:center; color: var(--text-muted);">No questions to review.</div>';
             return;
         }
 
@@ -1318,6 +1222,7 @@ class QuizApp {
     giveHint() {
         if(this.isAnswering) return;
         const q = this.questions[this.currentQIndex];
+        // Simple hint: First letter and length
         const hint = `Think! It starts with "${q.a.charAt(0)}" and has ${q.a.length} letters.`;
         this.ui.hintBubble.innerText = hint;
         this.ui.hintBubble.classList.add('show');
@@ -1332,17 +1237,11 @@ class QuizApp {
         }
         const q = this.questions[this.currentQIndex];
         this.isAnswering = false;
-        
-        // Reset Power Up for new question
-        this.powerUpAvailable = true;
-        this.powerUpActive = false;
-        this.ui.btnDoubleXP.classList.remove('active');
-        this.ui.btnDoubleXP.title = "Press [1] for 2x Score";
-
         this.ui.qCurrent.innerText = this.currentQIndex + 1;
         this.ui.question.innerText = q.q;
         this.ui.skipBtn.style.display = 'inline-block';
         this.ui.hintBubble.classList.remove('show');
+        this.ui.fbScore.style.display = 'none'; // Hide scoring breakdown
         
         const ttsEnabled = document.getElementById('tts-enable').checked;
         if(ttsEnabled) {
@@ -1399,45 +1298,82 @@ class QuizApp {
             isCorrect: isCorrect
         });
 
-        const stats = { totalAnswered: this.gamification.earnedBadges.length + 1, streak: this.streak, totalCorrect: 0, lastTimeUsed: timeTaken };
+        // --- EASY SCORING LOGIC ---
+        let pointsGained = 0;
+        let pointsBreakdown = "";
         
-        // NEW: Apply Power Up Multiplier
-        let multiplier = 1;
-        if (this.powerUpActive) {
-            multiplier = 2;
-            this.powerUpAvailable = false;
-            this.powerUpActive = false;
-            this.ui.btnDoubleXP.classList.remove('active');
-        }
-
+        // Base Score
+        let baseScore = 10;
+        let streakBonus = 0;
+        
         if (isCorrect) {
+            // Time Bonus
+            let timeBonus = 0;
+            if (timeTaken < 5) timeBonus = 5;
+            else if (timeTaken < 10) timeBonus = 2;
+            
+            // Streak Multiplier
+            let multiplier = 1;
+            if (this.streak >= 5) multiplier = 2;
+            if (this.streak >= 10) multiplier = 3;
+
+            streakBonus = (this.streak * multiplier) - 10; // Subtract base to avoid double counting the multiplier effect on base
+            if (streakBonus < 0) streakBonus = 0;
+
+            pointsGained = baseScore + timeBonus + streakBonus;
+            
+            // Generate Feedback Breakdown HTML
+            pointsBreakdown = `
+                <div class="score-row"><span>Base Score:</span> <span class="score-val">+${baseScore}</span></div>
+                ${timeBonus > 0 ? `<div class="score-row"><span>Time Bonus:</span> <span class="score-val">+${timeBonus}</span></div>` : ''}
+                ${streakBonus > 0 ? `
+                    <div class="score-row" style="margin-top:5px; border-top:1px dashed var(--text-muted); padding-top:5px;">
+                        <span>Streak (${this.streak}):</span> 
+                        <span class="streak-multiplier">x${multiplier}</span> 
+                        <span class="score-val">+${streakBonus}</span>
+                    </div>
+                ` : ''}
+                <div class="score-row" style="font-size:1.2rem; margin-top:10px; color:var(--success)">
+                    Total: +${pointsGained}
+                </div>
+            `;
+
             btn.classList.add('correct');
             this.confetti.burst(window.innerWidth/2, window.innerHeight/2);
             this.audio.playTone('correct');
             this.pet.setState('HAPPY');
-            
-            // Scoring with multiplier
-            const basePoints = 10 + (this.streak * 2) + Math.max(0, Math.floor((this.maxTime - timeTaken)));
-            this.score += basePoints * multiplier;
-            
             this.streak++;
-            this.gamification.addXP(20 * multiplier);
+            this.gamification.addXP(20);
         } else {
+            pointsGained = 0;
+            pointsBreakdown = `<div style="color:var(--accent)">No points earned.</div>`;
+            
             btn.classList.add('wrong');
             this.audio.playTone('wrong');
             this.pet.setState('DIZZY');
             this.streak = 0;
             Array.from(allBtns).forEach(b => { if(b.innerText === correct) b.classList.add('correct'); });
         }
+        
+        this.score += pointsGained;
         this.ui.score.innerText = this.score;
         this.ui.streak.innerText = this.streak;
         document.body.classList.remove('stress-mode');
         this.ui.fbTitle.innerText = isCorrect ? "Correct!" : "Incorrect";
         this.ui.fbTitle.style.color = isCorrect ? "var(--success)" : "var(--accent)";
+        
+        // Show breakdown
+        this.ui.fbScore.innerHTML = pointsBreakdown;
+        this.ui.fbScore.style.display = 'flex';
+
         this.ui.fbText.innerText = rationale || `The correct answer is ${correct}.`;
         this.ui.fbPanel.classList.add('show');
         this.ui.skipBtn.style.display = 'none';
+        
+        // Check Badges
+        const stats = { totalAnswered: this.gamification.earnedBadges.length + 1, streak: this.streak, totalCorrect: 0, lastTimeUsed: timeTaken };
         this.gamification.checkBadges(stats);
+
         setTimeout(() => {
             this.ui.fbPanel.classList.remove('show');
             this.currentQIndex++;
@@ -1449,6 +1385,7 @@ class QuizApp {
         this.isAnswering = true;
         clearInterval(this.timer);
         
+        // Record History
         this.allQuizHistory.push({ 
             q: this.questions[this.currentQIndex], 
             userAnswer: "Skipped",
@@ -1462,7 +1399,9 @@ class QuizApp {
         this.pet.setState('DIZZY');
         this.ui.fbTitle.innerText = "Skipped";
         this.ui.fbTitle.style.color = "var(--text-muted)";
-        this.ui.fbText.innerText = "You skipped this question. (-5 pts)";
+        this.ui.fbScore.innerHTML = `<div style="color:var(--accent)">-5 Points</div>`;
+        this.ui.fbScore.style.display = 'flex';
+        this.ui.fbText.innerText = "You skipped this question.";
         this.ui.fbPanel.classList.add('show');
         this.ui.skipBtn.style.display = 'none';
         setTimeout(() => {
@@ -1476,6 +1415,7 @@ class QuizApp {
         this.streak = 0;
         this.ui.streak.innerText = this.streak;
 
+        // Record History
         this.allQuizHistory.push({ 
             q: this.questions[this.currentQIndex], 
             userAnswer: "Timed Out",
@@ -1487,6 +1427,8 @@ class QuizApp {
         Array.from(this.ui.options.children).forEach(b => { if(b.innerText === q.a) b.classList.add('correct'); });
         this.ui.fbTitle.innerText = "Time's Up!";
         this.ui.fbTitle.style.color = "var(--accent)";
+        this.ui.fbScore.innerHTML = `<div style="color:var(--accent)">0 Points</div>`;
+        this.ui.fbScore.style.display = 'flex';
         this.ui.fbText.innerText = `The correct answer was ${q.a}. ${q.r}`;
         this.ui.fbPanel.classList.add('show');
         this.ui.skipBtn.style.display = 'none';
@@ -1495,23 +1437,6 @@ class QuizApp {
             this.currentQIndex++;
             this.loadQuestion();
         }, 4000);
-    }
-    
-    // NEW: Keyboard Navigation Logic
-    handleKeyInput(e) {
-        // Power Up Shortcut
-        if (e.key === '1' || e.key === '!') {
-            this.activatePowerUp();
-            return;
-        }
-        // Navigation Shortcuts (Left/Right Arrows)
-        if (this.ui.question.parentElement.offsetParent !== null) { // Only in quiz
-            if (e.key === 'ArrowLeft') {
-                this.navQuestion(-1);
-            } else if (e.key === 'ArrowRight') {
-                this.navQuestion(1);
-            }
-        }
     }
 }
 
@@ -1537,10 +1462,6 @@ class FlashcardApp {
 // Initialize
 const app = new QuizApp();
 const flashcardApp = new FlashcardApp();
-
-// Global Key Listener for Navigation & Powerups
-document.addEventListener('keydown', (e) => app.handleKeyInput(e));
-
 app.showSection('settings');
 </script>
 </body>
