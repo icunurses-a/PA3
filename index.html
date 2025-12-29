@@ -19,13 +19,12 @@
             --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-        /* Hide default cursor ONLY on desktop/non-touch devices */
+        /* Hide default cursor on desktop */
         @media (hover: hover) and (pointer: fine) {
             * { cursor: none !important; }
         }
-        
         @media (hover: none) or (pointer: coarse) {
             * { cursor: auto !important; }
         }
@@ -40,55 +39,7 @@
             overflow: hidden;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-        }
-
-        body.stress-mode {
-            animation: stress-flash 0.5s infinite alternate;
-        }
-
-        @keyframes stress-flash {
-            from { background-color: var(--bg-dark); }
-            to { background-color: #2a0000; box-shadow: inset 0 0 50px red; }
-        }
-
-        /* --- Custom Cursor --- */
-        #custom-cursor {
-            position: fixed;
-            top: 0; left: 0;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 5px 10px;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            font-weight: bold;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            z-index: 10000;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: width 0.2s, height 0.2s, border-radius 0.2s, font-size 0.2s, opacity 0.2s;
-            box-shadow: 0 0 10px var(--primary);
-        }
-
-        .cursor-shape-text { border-radius: 4px; }
-        .cursor-shape-circle { border-radius: 50%; width: 50px; height: 50px; font-size: 10px; text-align: center; }
-        .cursor-shape-square { border-radius: 0; }
-
-        .click-effect {
-            position: fixed;
-            pointer-events: none;
-            animation: floatUpFade 1.5s ease-out forwards;
-            font-size: 12px;
-            color: var(--accent);
-            z-index: 9999;
-            font-weight: bold;
-            touch-action: none;
-        }
-
-        @keyframes floatUpFade {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-50px) scale(0.5); opacity: 0; }
+            padding-bottom: 80px; /* Space for bottom nav on mobile */
         }
 
         /* --- Header --- */
@@ -101,11 +52,12 @@
             border-bottom: 2px solid #333;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             z-index: 10;
-            min-height: 80px;
+            min-height: 70px;
+            flex-shrink: 0;
         }
 
         .big-rotating-title {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -114,17 +66,9 @@
             line-height: 1.2;
         }
 
-        @media (min-width: 768px) {
-            .big-rotating-title { font-size: 2.5rem; }
-            header { padding: 1rem 2rem; min-height: 100px; }
-        }
-
         @keyframes rgb-rotate-pulse {
             0% { transform: rotate(-3deg) scale(1); color: #ff0000; text-shadow: 0 0 20px #ff0000; }
-            25% { transform: rotate(3deg) scale(1.05); color: #00ff00; text-shadow: 0 0 30px #00ff00; }
-            50% { transform: rotate(-3deg) scale(1); color: #0000ff; text-shadow: 0 0 20px #0000ff; }
-            75% { transform: rotate(3deg) scale(1.05); color: #ff00ff; text-shadow: 0 0 30px #ff00ff; }
-            100% { transform: rotate(-3deg) scale(1); color: #ff0000; text-shadow: 0 0 20px #ff0000; }
+            100% { transform: rotate(3deg) scale(1); color: #0000ff; text-shadow: 0 0 20px #0000ff; }
         }
 
         /* --- Main Layout --- */
@@ -132,11 +76,11 @@
             display: flex;
             flex: 1;
             overflow: hidden;
-            flex-direction: row;
+            position: relative;
         }
 
-        /* --- Sidebar --- */
-        nav {
+        /* --- Desktop Sidebar --- */
+        .sidebar {
             width: 260px;
             background: var(--panel-bg);
             display: flex;
@@ -146,8 +90,8 @@
             border-right: 1px solid #333;
             z-index: 5;
             overflow-y: auto;
-            flex-shrink: 0;
-            transition: all 0.3s ease;
+            transition: transform 0.3s ease;
+            height: 100%;
         }
 
         .nav-btn {
@@ -155,14 +99,16 @@
             border: 1px solid var(--primary);
             color: var(--primary);
             padding: 15px;
-            border-radius: 4px;
-            transition: 0.3s;
+            border-radius: 8px;
+            transition: 0.2s;
             text-align: left;
             font-weight: bold;
             display: flex;
             align-items: center;
+            justify-content: flex-start;
             gap: 10px;
-            min-height: 44px;
+            font-size: 1rem;
+            min-height: 48px; /* Touch target size */
         }
         .nav-btn:hover, .nav-btn.active {
             background: var(--primary);
@@ -170,7 +116,52 @@
             box-shadow: 0 0 15px var(--primary);
         }
 
-        /* --- Stats Panel --- */
+        /* --- Mobile/Tablet Bottom Navigation --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--panel-bg);
+            border-top: 1px solid #333;
+            display: none; /* Hidden by default on desktop */
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            z-index: 50;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+            height: 70px;
+        }
+
+        .bottom-nav .nav-btn {
+            flex-direction: column;
+            padding: 5px;
+            font-size: 0.8rem;
+            text-align: center;
+            justify-content: center;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            min-width: 60px;
+        }
+        
+        .bottom-nav .nav-btn.active {
+            color: var(--primary);
+            background: rgba(0, 243, 255, 0.1);
+            border-radius: 8px;
+        }
+        
+        .bottom-nav .nav-btn:hover {
+            color: var(--text-main);
+        }
+
+        .bottom-nav .nav-icon {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        /* --- Stats Panel (Simplified for Easy Mode) --- */
         .stats-panel {
             margin-top: auto;
             background: rgba(0,0,0,0.3);
@@ -184,6 +175,14 @@
             margin-bottom: 5px;
             border-radius: 5px;
             overflow: hidden;
+            display: none; /* Hidden in Simple Mode */
+        }
+        .simple-score-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--success);
+            text-align: center;
+            display: none; /* Hidden in XP Mode */
         }
         .xp-bar-fill {
             height: 100%;
@@ -224,7 +223,6 @@
             overflow-y: auto;
             position: relative;
             background: radial-gradient(circle at center, #161922 0%, #0a0a10 100%);
-            -webkit-overflow-scrolling: touch;
         }
 
         .section { display: none; height: 100%; padding: 2rem; padding-bottom: 150px; }
@@ -272,17 +270,11 @@
             background: rgba(255,255,255,0.05); border: 2px solid #333; padding: 1.5rem;
             color: white; font-size: 1.1rem; border-radius: 8px;
             transition: 0.2s; text-align: left; position: relative; overflow: hidden;
-            min-height: 60px;
+            min-height: 60px; /* Touch friendly */
         }
         .option-btn:hover { border-color: var(--primary); background: rgba(0, 243, 255, 0.05); }
         .option-btn.correct { background: rgba(0, 255, 136, 0.15); border-color: var(--success); }
         .option-btn.wrong { background: rgba(255, 0, 85, 0.15); border-color: var(--accent); animation: shake 0.4s; }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
 
         .quiz-nav {
             display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; position: relative; z-index: 1; flex-wrap: wrap;
@@ -293,12 +285,6 @@
             flex: 1;
         }
         .btn-nav:hover { background: var(--primary); color: #000; }
-
-        .nav-hint {
-            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
-            font-size: 0.8rem; color: var(--text-muted);
-            text-align: center; width: 100%; opacity: 0.6;
-        }
 
         /* --- Aladdin Hint --- */
         #aladdin-container {
@@ -322,7 +308,7 @@
         }
         .hint-bubble.show { display: block; opacity: 1; }
 
-        /* --- Feedback Panel (Enhanced for Easy Scoring) --- */
+        /* --- Feedback Panel --- */
         .feedback-panel {
             position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(150%);
             width: 90%; max-width: 600px; background: var(--panel-bg);
@@ -332,28 +318,7 @@
         }
         .feedback-panel.show { transform: translateX(-50%) translateY(0); }
         .feedback-title { font-weight: bold; font-size: 1.2rem; margin-bottom: 0.5rem; }
-        
-        /* Scoring Breakdown Styles */
-        .score-breakdown {
-            background: rgba(0, 255, 136, 0.1);
-            border-radius: 4px;
-            padding: 10px;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .score-row { display: flex; justify-content: space-between; }
-        .score-val { font-weight: bold; color: var(--success); }
-        .streak-multiplier { 
-            color: var(--warning); 
-            font-weight: 900; 
-            font-size: 1.5rem;
-            text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
-        }
-
-        .rationale-text { color: var(--text-muted); line-height: 1.5; font-size: 0.95rem; border-top: 1px solid #333; padding-top: 10px; }
+        .rationale-text { color: var(--text-muted); line-height: 1.5; }
 
         /* --- Review Section --- */
         .review-list { max-width: 800px; margin: 0 auto; }
@@ -419,44 +384,51 @@
         .btn-danger { background: var(--accent); color: white; }
         .btn-danger:hover { background: #cc0044; }
 
-        /* --- RESPONSIVE MEDIA QUERIES --- */
+        /* --- RESPONSIVE BREAKPOINTS --- */
         
+        /* Tablet (Portrait) & Mobile: Use Bottom Nav */
         @media (max-width: 1024px) {
-            .app-container { flex-direction: column; }
-            nav { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #333; flex-direction: row; overflow-x: auto; padding: 0.5rem; order: 1; }
-            .stats-panel { display: none; }
-            .nav-btn span { display: none; }
-            .nav-btn::after { content: attr(data-icon); }
-            main { order: 2; }
-        }
-
-        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .bottom-nav { display: flex; }
             .big-timer-overlay { font-size: 8rem; }
-            .big-rotating-title { font-size: 1.2rem; }
+            .big-rotating-title { font-size: 1rem; }
             #pet-game { width: 80px; height: 80px; }
             #pet-canvas { width: 60px; height: 60px; }
             #aladdin-container { bottom: 90px; left: 10px; }
-            .question-text { font-size: 1.1rem; }
-            .options-grid { grid-template-columns: 1fr; }
-            .score-breakdown { font-size: 0.8rem; padding: 5px; }
-            .nav-btn { flex-direction: column; padding: 8px; justify-content: center; }
-            .nav-btn span { display: block; font-size: 0.8rem; }
             
-            #custom-cursor { display: none !important; }
+            /* Simple Score Mode Layout */
+            .simple-score-display { display: block; font-size: 2.5rem; color: var(--primary); }
+            .xp-bar-container, .badge-grid, .stat-text { display: none; } /* Hide complex stats */
+        }
+
+        /* Desktop: Use Sidebar */
+        @media (min-width: 1025px) {
+            .bottom-nav { display: none; }
+            .sidebar { display: flex; }
+            
+            /* XP Mode Layout (Default on desktop) */
+            .simple-score-display { display: none; }
+            .xp-bar-container, .badge-grid, .stat-text { display: block; }
+        }
+
+        /* Hide custom cursor on touch via JS logic but ensure css backup */
+        @media (max-width: 768px) {
+            .options-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<!-- Custom Cursor (Hidden on touch devices via CSS) -->
+<!-- Custom Cursor -->
 <div id="custom-cursor" class="cursor-shape-text">AMER ALSHARIF</div>
 
 <!-- Aladdin Hint -->
 <div id="aladdin-container">
     <div class="hint-bubble" id="hint-bubble">Think about location...</div>
-    <div id="aladdin-avatar" onclick="app.giveHint()" data-icon="🧞‍♂️">🧞‍♂️</div>
+    <div id="aladdin-avatar" onclick="app.giveHint()">🧞‍♂️</div>
     <div style="color: var(--warning); font-size: 0.8rem; font-weight: bold; margin-top: 5px;">CLICK FOR HINT</div>
 </div>
+
 <canvas id="confetti-canvas"></canvas>
 
 <header>
@@ -464,10 +436,11 @@
 </header>
 
 <div class="app-container">
-    <nav>
-        <button class="nav-btn active" onclick="app.showSection('quiz-challenge')" data-icon="⚔️"><span>⚔️ Quiz Challenge</span></button>
-        <button class="nav-btn" onclick="app.showSection('flashcards')" data-icon="🃏"><span>🃏 Flash Cards</span></button>
-        <button class="nav-btn" onclick="app.showSection('settings')" data-icon="⚙️"><span>⚙️ Settings</span></button>
+    <!-- Desktop Sidebar -->
+    <nav class="sidebar">
+        <button class="nav-btn active" onclick="app.showSection('quiz-challenge')">⚔️ <span>Quiz Challenge</span></button>
+        <button class="nav-btn" onclick="app.showSection('flashcards')">🃏 <span>Flash Cards</span></button>
+        <button class="nav-btn" onclick="app.showSection('settings')">⚙️ <span>Settings</span></button>
         
         <div class="stats-panel">
             <div class="stat-text"><span>Level <span id="level-num">1</span></span> <span id="xp-text">0 XP</span></div>
@@ -475,6 +448,22 @@
             <div class="badge-grid" id="badge-container"></div>
         </div>
     </nav>
+
+    <!-- Mobile/Tablet Bottom Navigation -->
+    <div class="bottom-nav">
+        <button class="nav-btn active" onclick="app.showSection('quiz-challenge')">
+            <div class="nav-icon">⚔️</div>
+            <div>Quiz</div>
+        </button>
+        <button class="nav-btn" onclick="app.showSection('flashcards')">
+            <div class="nav-icon">🃏</div>
+            <div>Cards</div>
+        </button>
+        <button class="nav-btn" onclick="app.showSection('settings')">
+            <div class="nav-icon">⚙️</div>
+            <div>Set</div>
+        </button>
+    </div>
 
     <main>
         <!-- Settings Section -->
@@ -490,6 +479,12 @@
                     <label>Time per Question (sec)</label>
                     <input type="range" id="q-time" min="15" max="120" value="30" oninput="document.getElementById('time-val').innerText = this.value + 's'">
                     <div style="text-align: right; color: var(--primary);" id="time-val">30s</div>
+                </div>
+                <div class="card">
+                    <h3>Scoring Mode</h3>
+                    <label>Easy Scoring (Simple Points)</label>
+                    <input type="checkbox" id="simple-scoring" style="width:auto; transform: scale(1.5); margin-bottom: 1rem;" onchange="app.toggleScoringMode()">
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Check this for simple points instead of XP/Badges.</p>
                 </div>
                 <div class="card">
                     <h3>Cursor Customization</h3>
@@ -518,7 +513,7 @@
                 <div class="card">
                     <h3>Text-to-Speech (TTS)</h3>
                     <label>Enable TTS</label>
-                    <input type="checkbox" id="tts-enable" checked>
+                    <input type="checkbox" id="tts-enable" checked style="width:auto;">
                     <br><br>
                     <label>Speech Rate</label>
                     <input type="range" id="tts-rate" min="0.5" max="2" step="0.1" value="1">
@@ -529,7 +524,7 @@
                 <div class="card">
                     <h3>Audio & SFX</h3>
                     <label>Sound Effects</label>
-                    <input type="checkbox" id="sfx-enable" checked>
+                    <input type="checkbox" id="sfx-enable" checked style="width:auto;">
                     <p style="font-size: 0.8rem; color: #666; margin-top:5px;">Enables dings and buzzers.</p>
                 </div>
             </div>
@@ -540,8 +535,10 @@
 
         <!-- Quiz Section -->
         <section id="quiz-challenge" class="section">
-            <div class="nav-hint">Use ⬆️ ⬇️ Arrow Keys or Mouse Wheel to Navigate</div>
-            <div class="quiz-hud">
+            <!-- Simple Score Display (Hidden by default on desktop) -->
+            <div class="simple-score-display" id="simple-score-display">Score: 0</div>
+
+            <div class="quiz-hud" id="xp-hud">
                 <div>Score: <span id="score" style="color:var(--success); font-weight:bold;">0</span> | Streak: <span id="streak" style="color:var(--warning); font-weight:bold;">0</span></div>
                 <div class="quiz-controls">
                     <button onclick="app.endQuiz()" class="btn-end">End Quiz</button>
@@ -610,9 +607,6 @@
 <!-- Rationale Feedback Panel -->
 <div class="feedback-panel" id="feedback-panel">
     <div class="feedback-title" id="fb-title">Correct!</div>
-    <div class="score-breakdown" id="score-breakdown" style="display:none;">
-        <!-- Content injected via JS -->
-    </div>
     <div class="rationale-text" id="fb-text">Explanation goes here.</div>
 </div>
 
@@ -637,7 +631,6 @@
 const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 const cursor = document.getElementById('custom-cursor');
 
-// Hide cursor logic on touch devices
 if (isTouchDevice) {
     cursor.style.display = 'none';
 }
@@ -652,7 +645,6 @@ const settings = {
 
 function updateCursorStyle() {
     const isVisible = settings.vis.value === 'visible';
-    // Only show if not touch device AND setting is visible
     cursor.style.display = (isVisible && !isTouchDevice) ? 'flex' : 'none';
     
     cursor.className = '';
@@ -728,7 +720,7 @@ class AudioController {
 }
 
 /**
- * CONFETTI SYSTEM (Cross-Platform Canvas)
+ * CONFETTI SYSTEM
  */
 class ConfettiSystem {
     constructor() {
@@ -815,7 +807,7 @@ class Gamification {
     }
 }
 
-// --- GENERATING 165 QUESTIONS (Filling) ---
+// --- GENERATING 165 QUESTIONS ---
 const baseQuestions = [
     { q: "Dysphagia refers to:", a: "Difficulty swallowing", opts: ["Difficulty swallowing", "Heartburn", "Loss of appetite", "Vomiting blood"], r: "Dysphagia is defined as difficulty swallowing." },
     { q: "Pyrosis (heartburn) is caused by:", a: "Reflux of gastric acid into esophagus and stomach", opts: ["Inflammation of liver", "Reflux of gastric acid into esophagus and stomach", "Appendicitis", "Spleen enlargement"], r: "Pyrosis results from reflux of gastric acid." },
@@ -837,15 +829,15 @@ const baseQuestions = [
     { q: "When palpating the carotid arteries, you should:", a: "Palpate only one carotid artery at a time", opts: ["Palpate both simultaneously", "Palpate only one carotid artery at a time", "Avoid palpation completely", "Palpate lightly at the same time"], r: "Palpating both can compromise cerebral blood flow." },
     { q: "The optimal position to inspect the jugular venous pulse is:", a: "Supine at 30–45 degrees", opts: ["Standing upright", "Supine at 0 degrees", "Supine at 30–45 degrees", "Sitting fully upright"], r: "30-45 degrees optimizes JVP visibility." },
     { q: "Normal jugular venous pulsation is:", a: "2 cm or less above the sternal angle", opts: ["1 cm above the sternal angle", "2 cm or less above the sternal angle", "3–4 cm above the sternal angle", "Not visible"], r: "JVP >3cm is elevated; normal is 2cm or less." },
-    { q: "The aortic valve area is best auscultated at:", a: "Second right interspace", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Aortic area is the 2nd right intercostal space." },
-    { q: "The pulmonic valve area is auscultated at:", a: "Second left interspace", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Pulmonic area is the 2nd left intercostal space." },
-    { q: "The tricuspid valve area is located at:", a: "Left lower sternal border", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Tricuspid area is the left lower sternal border." },
-    { q: "The mitral valve area is located at:", a: "Fifth interspace at left midclavicular line", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Mitral area is the apex (5th intercostal, midclavicular)." },
+    { q: "The aortic valve area is best auscultated at:", a: "Second right interspace", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Aortic area is 2nd right intercostal space." },
+    { q: "The pulmonic valve area is auscultated at:", a: "Second left interspace", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Pulmonic area is 2nd left intercostal space." },
+    { q: "The tricuspid valve area is located at:", a: "Left lower sternal border", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Tricuspid area is left lower sternal border." },
+    { q: "The mitral valve area is located at:", a: "Fifth interspace at left midclavicular line", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Mitral area is apex (5th intercostal, midclavicular)." },
     { q: "The first heart sound (S1) is caused by:", a: "Closure of the AV valves", opts: ["Closure of the semilunar valves", "Closure of the AV valves", "Ventricular filling", "Atrial contraction"], r: "S1 is the 'lub' caused by AV (Mitral/Tricuspid) closure." },
     { q: "The second heart sound (S2) is caused by:", a: "Closure of the semilunar valves", opts: ["Closure of the semilunar valves", "Closure of the AV valves", "Ventricular filling", "Atrial contraction"], r: "S2 is the 'dub' caused by Aortic/Pulmonic valve closure." },
     { q: "To detect diastolic filling sounds, you should:", a: "Roll the patient toward their left side and use the bell at the apex", opts: ["Listen only in the supine position", "Roll the patient toward their left side and use the bell at the apex", "Listen with the diaphragm at the base", "Only palpate the apex"], r: "Left lateral decubitus position enhances S3/S4." },
     { q: "The modified Allen test is used to:", a: "Assess patency of radial and ulnar arteries and collateral circulation to the hand", opts: ["Measure blood pressure", "Assess patency of radial and ulnar arteries and collateral circulation to the hand", "Detect heart murmurs", "Evaluate venous return"], r: "Allen test checks ulnar artery patency before radial artery stick." },
-    { q: "Normal color return in the feet after comparison should be:", a: "10 seconds or less", opts: ["5 seconds or less", "10 seconds or less", "15 seconds or less", "20 seconds or less"], r: "Capillary refill should be brisk, usually < 2 seconds, definitely < 10s." },
+    { q: "Normal color return in the feet after compression should be:", a: "10 seconds or less", opts: ["5 seconds or less", "10 seconds or less", "15 seconds or less", "20 seconds or less"], r: "Capillary refill should be brisk, usually < 2 seconds, definitely < 10s." },
     { q: "A Doppler ultrasonic probe is used to:", a: "All of the above", opts: ["Detect a weak peripheral pulse", "Monitor blood pressure in infants or children", "Measure low blood pressure or blood pressure in a lower extremity", "All of the above"], r: "Doppler amplifies sound for weak pulses or BP measurement." },
     { q: "A thrill is:", a: "A palpable vibration that feels like the throat of a purring cat", opts: ["A type of heart sound heard with a stethoscope", "A palpable vibration that feels like the throat of a purring cat", "A normal finding in all adults", "A sign of weak pulses"], r: "A thrill is a palpable murmur." },
     { q: "Flexion is:", a: "Bending a limb at a joint", opts: ["Straightening a limb at a joint", "Bending a limb at a joint", "Moving a limb away from the midline", "Moving a limb toward the midline"], r: "Flexion decreases the angle of the joint." },
@@ -864,15 +856,15 @@ const baseQuestions = [
     { q: "Depression is:", a: "Lowering a body part", opts: ["Raising a body part", "Lowering a body part", "Moving the sole of the foot inward", "Moving a limb away from the midline"], r: "Depression moves a part inferiorly." },
     { q: "Ballottement of the Patella is used to:", a: "Detect large amounts of fluid in the knee", opts: ["Assess for joint instability", "Detect large amounts of fluid in the knee", "Measure limb rotation", "Test ankle mobility"], r: "Ballottement checks for effusion in the knee." },
     { q: "In the Ballottement test, you:", a: "Push the patella sharply against the femur while compressing the suprapatellar pouch", opts: ["Push the patella sharply against the femur while compressing the suprapatellar pouch", "Pull the patella upward gently", "Rotate the knee externally", "Bend the knee fully to 90 degrees"], r: "The technique pushes fluid into the joint space." },
-    { q: "Hypopigmentation refers to:", a: "Loss of skin color", opts: ["Increase in skin color", "Loss of skin color", "Bluish discoloration", "Yellow discoloration"], r: "Hypopigmentation is the loss of melanin/color." },
+    { q: "Hypopigmentation refers to:", a: "Loss of skin color", opts: ["Increase in skin color", "Loss of skin color", "Bluish discoloration", "Yellow discoloration"], r: "Hypopigmentation is loss of melanin/color." },
     { q: "A generalized color change of the skin usually suggests:", a: "Systemic disease", opts: ["Local infection", "Trauma", "Systemic disease", "Normal aging"], r: "Generalized changes (like jaundice) suggest systemic issues." },
     { q: "Hyperpigmentation is best defined as:", a: "Increase in skin color", opts: ["Absence of melanin", "Loss of skin moisture", "Increase in skin color", "Bluish mottling"], r: "Hyperpigmentation is an increase in skin color." },
     { q: "Which condition describes oily skin?", a: "Seborrhea", opts: ["Xerosis", "Seborrhea", "Alopecia", "Vitiligo"], r: "Seborrhea is characterized by excessive oil production." },
-    { q: "Xerosis refers to skin that is:", a: "Dry", opts: ["Oily", "Inflamed", "Dry", "Pigmented"], r: "Xerosis is the medical term for dry skin." },
+    { q: "Xerosis refers to skin that is:", a: "Dry", opts: ["Oily", "Inflamed", "Dry", "Pigmented"], r: "Xerosis is medical term for dry skin." },
     { q: "Which change in a mole is most concerning?", a: "Sudden bleeding or itching", opts: ["Present since childhood", "Uniform color", "Sudden bleeding or itching", "Small size"], r: "Changes like bleeding or itching (ABCDE rule) signal concern." },
     { q: "Hirsutism is defined as:", a: "Excessive or shaggy hair growth", opts: ["Loss of scalp hair", "Patchy absence of pigment", "Excessive or shaggy hair growth", "Brittle hair"], r: "Hirsutism is abnormal hair growth in women/male-pattern." },
     { q: "Alopecia refers to:", a: "Significant hair loss", opts: ["Excess body hair", "Significant hair loss", "Oily scalp", "White hair patches"], r: "Alopecia is hair loss or baldness." },
-    { q: "Vitiligo is characterized by:", a: "Complete absence of melanin", opts: ["Yellow discoloration", "Bluish tone", "Complete absence of melanin", "Red lesions"], r: "Vitiligo is the destruction of melanocytes causing white patches." },
+    { q: "Vitiligo is characterized by:", a: "Complete absence of melanin", opts: ["Yellow discoloration", "Bluish tone", "Complete absence of melanin", "Red lesions"], r: "Vitiligo is destruction of melanocytes causing white patches." },
     { q: "A mole (nevus) is best described as:", a: "A clump of melanocytes", opts: ["Dilated capillaries", "A clump of melanocytes", "Fluid accumulation", "Infection"], r: "A nevus is a proliferation of melanocytes." },
     { q: "A junctional nevus is:", a: "Flat and common in children", opts: ["Raised only", "Seen in elderly", "Flat and common in children", "Always malignant"], r: "Junctional nevi are flat and appear in childhood." },
     { q: "Erythema occurs due to:", a: "Dilated capillaries", opts: ["Decreased oxygen", "Excess bilirubin", "Dilated capillaries", "Lack of melanin"], r: "Erythema is redness caused by capillary dilation." },
@@ -906,13 +898,13 @@ const baseQuestions = [
     { q: "Periodic breathing is:", a: "Alternating periods of apnea and hyperventilation", opts: ["Normal in adults", "Alternating periods of apnea and hyperventilation", "Only seen in sleep apnea", "Sign of asthma"], r: "Cheyne-Stokes is periodic breathing." },
     { q: "Pectus Carinatum is characterized by:", a: "Forward protrusion of the sternum with ribs sloping back at either side", opts: ["Sunken sternum and adjacent cartilages", "Forward protrusion of the sternum with ribs sloping back at either side", "Barrel-shaped chest", "Lateral S-shaped curvature of spine"], r: "Pectus Carinatum is 'pigeon chest'." },
     { q: "Wheeze is characterized by:", a: "High-pitched sound due to diffuse airway obstruction (e.g., acute asthma)", opts: ["Low-pitched sound, normal finding", "High-pitched sound due to diffuse airway obstruction (e.g., acute asthma)", "Discontinuous popping sound on inspiration", "Normal expiratory sound"], r: "Wheezes are high-pitched musical sounds from asthma/COPD." },
-    { q: "Who's responsible of loss of the color?", a: "Melanin", opts: ["Hemoglobin", "Melanin", "Keratin", "Collagen"], r: "Loss of color (hypopigmentation) is the absence of melanin." },
+    { q: "Who's responsible of loss of the color?", a: "Melanin", opts: ["Hemoglobin", "Melanin", "Keratin", "Collagen"], r: "Loss of color (hypopigmentation) is absence of melanin." },
     { q: "Hypopigmentation is defined as:", a: "Loss of color", opts: ["Gain of color", "Loss of color", "Redness", "Blue tint"], r: "Hypopigmentation is loss of color." },
     { q: "Hyperpigmentation is defined as:", a: "Increase of color", opts: ["Loss of color", "Increase of color", "Inflammation", "Dryness"], r: "Hyperpigmentation is increase of color." },
     { q: "Xerosis is dry skin. Seborrhea is:", a: "Oily skin", opts: ["Dry skin", "Oily skin", "Wet skin", "Scaly skin"], r: "Seborrhea is oily skin." },
     { q: "Alopecia is a significant loss, a full head of hair. Hirsutism is:", a: "Shaggy or excessive hair", opts: ["Hair loss", "Shaggy or excessive hair", "Soft hair", "Baldness"], r: "Hirsutism is shaggy or excessive hair." },
-    { q: "Vitiligo is the complete absence of melanin pigment in:", a: "Patchy areas", opts: ["The whole body", "Patchy areas", "Only hands", "Only face"], r: "Vitiligo is the absence of melanin in patchy areas." },
-    { q: "A mole is a clump of melanocytes. Erythema is:", a: "Hyperemia in the dilated superficial capillaries", opts: ["Loss of blood", "Hyperemia in the dilated superficial capillaries", "Low blood", "Pale skin"], r: "Erythema is hyperemia in the dilated superficial capillaries." },
+    { q: "Vitiligo is complete absence of melanin pigment in:", a: "Patchy areas", opts: ["The whole body", "Patchy areas", "Only hands", "Only face"], r: "Vitiligo is absence of melanin in patchy areas." },
+    { q: "A mole is a clump of melanocytes. Erythema is:", a: "Hyperemia in dilated superficial capillaries", opts: ["Loss of blood", "Hyperemia in dilated superficial capillaries", "Low blood", "Pale skin"], r: "Erythema is hyperemia in dilated superficial capillaries." },
     { q: "Cyanosis is a bluish mottled color, seen mostly in:", a: "The lip", opts: ["The arm", "The leg", "The lip", "The back"], r: "Cyanosis is bluish mottled color seen mostly in the lip." },
     { q: "Hypothermia is generalized coolness. Hyperthermia occurs when:", a: "Metabolic rate increases", opts: ["Metabolic rate increases", "Metabolic rate decreases", "You sleep", "You drink water"], r: "Hyperthermia occurs when metabolic rate increases." },
     { q: "Diaphoresis and dehydration can be seen when:", a: "Inspecting skin", opts: ["Listening to heart", "Inspecting skin", "Palpating abdomen", "Checking eyes"], r: "Diaphoresis is seen when inspecting skin." },
@@ -961,11 +953,8 @@ class PetGame {
         this.ctx = this.canvas.getContext('2d');
         this.statusMsg = document.getElementById('pet-msg');
         this.resize();
-        this.state = 'IDLE'; 
-        this.pulseRate = 60; 
-        this.pulseColor = '#00ff88';
-        window.addEventListener('resize', () => this.resize()); 
-        this.animate();
+        this.state = 'IDLE'; this.pulseRate = 60; this.pulseColor = '#00ff88';
+        window.addEventListener('resize', () => this.resize()); this.animate();
     }
     resize() {
         const dpr = window.devicePixelRatio || 1;
@@ -1001,10 +990,8 @@ class PetGame {
         ctx.arc(cx, cy, 20 * scale, 0, Math.PI * 2);
         ctx.fill();
         
-        ctx.shadowBlur = 20; 
-        ctx.shadowColor = this.pulseColor;
-        ctx.stroke(); 
-        ctx.shadowBlur = 0;
+        ctx.shadowBlur = 20; ctx.shadowColor = this.pulseColor;
+        ctx.stroke(); ctx.shadowBlur = 0;
         
         ctx.strokeStyle = this.pulseColor;
         ctx.lineWidth = 2;
@@ -1059,13 +1046,18 @@ class QuizApp {
         this.questions = [];
         this.allQuizHistory = []; 
         this.currentQIndex = 0;
-        this.score = 0;
+        this.score = 0; // Simple Score
+        this.xpScore = 0; // XP Score
         this.streak = 0;
         this.timer = null;
         this.timeLeft = 0;
         this.maxTime = 30;
         this.isAnswering = false;
         this.startTime = 0;
+        
+        // Easy Scoring Mode Toggle
+        this.simpleMode = false;
+
         this.ui = {
             question: document.getElementById('question-text'),
             options: document.getElementById('options-container'),
@@ -1078,66 +1070,56 @@ class QuizApp {
             fbPanel: document.getElementById('feedback-panel'),
             fbTitle: document.getElementById('fb-title'),
             fbText: document.getElementById('fb-text'),
-            fbScore: document.getElementById('score-breakdown'),
             skipBtn: document.getElementById('skip-btn'),
-            hintBubble: document.getElementById('hint-bubble')
+            hintBubble: document.getElementById('hint-bubble'),
+            xpHud: document.getElementById('xp-hud'),
+            simpleScoreDisplay: document.getElementById('simple-score-display')
         };
-
-        // Add Easy Scrolling Listeners
-        this.setupEasyScrolling();
     }
-
-    setupEasyScrolling() {
-        // Keyboard Navigation
-        document.addEventListener('keydown', (e) => {
-            // Only navigate if in quiz section and not answering
-            if(document.getElementById('quiz-challenge').classList.contains('active') && !this.isAnswering) {
-                if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-                    e.preventDefault(); // Prevent scrolling
-                    this.navQuestion(1);
-                } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-                    e.preventDefault();
-                    this.navQuestion(-1);
-                }
-            }
-        });
-
-        // Mouse Wheel Navigation
-        document.getElementById('quiz-challenge').addEventListener('wheel', (e) => {
-            if (this.isAnswering) return;
-            // Debounce to prevent skipping too many questions
-            if (this.wheelTimeout) return;
-
-            if (e.deltaY < 0) {
-                // Scrolling Up -> Previous
-                e.preventDefault();
-                this.navQuestion(-1);
-            } else if (e.deltaY > 0) {
-                // Scrolling Down -> Next
-                e.preventDefault();
-                this.navQuestion(1);
-            }
-            
-            // Reset timeout
-            this.wheelTimeout = setTimeout(() => { this.wheelTimeout = null; }, 200);
-        }, { passive: false }); // Passive false allows preventDefault
+    
+    toggleScoringMode() {
+        this.simpleMode = document.getElementById('simple-scoring').checked;
+        
+        if (this.simpleMode) {
+            // Show Simple Display
+            this.ui.simpleScoreDisplay.style.display = 'block';
+            this.ui.xpHud.style.display = 'none'; // Hide the complex XP/Streak top bar
+        } else {
+            // Show XP Display
+            this.ui.simpleScoreDisplay.style.display = 'none';
+            this.ui.xpHud.style.display = 'flex';
+        }
     }
 
     showSection(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
         
-        // Responsive logic for nav highlighting
-        if (id === 'review-section') document.querySelectorAll('.nav-btn')[0].classList.add('active'); 
-        else if (id === 'quiz-challenge') document.querySelectorAll('.nav-btn')[0].classList.add('active'); 
-        else if (id === 'flashcards') document.querySelectorAll('.nav-btn')[1].classList.add('active'); 
-        else document.querySelectorAll('.nav-btn')[2].classList.add('active');
+        // Handle Active State for both Nav bars
+        const btns = document.querySelectorAll('.nav-btn');
+        btns.forEach(b => b.classList.remove('active'));
+        
+        // Highlight correct button based on ID
+        if (id === 'quiz-challenge') {
+            document.querySelectorAll('button[onclick*="quiz-challenge"]').forEach(b => b.classList.add('active'));
+            document.getElementById('aladdin-container').style.display = 'flex';
+        } 
+        else if (id === 'flashcards') {
+            document.querySelectorAll('button[onclick*="flashcards"]').forEach(b => b.classList.add('active'));
+            document.getElementById('aladdin-container').style.display = 'none';
+        }
+        else if (id === 'review-section') {
+            document.querySelectorAll('button[onclick*="settings"]').forEach(b => b.classList.add('active')); // Assuming back to menu
+            document.getElementById('aladdin-container').style.display = 'none';
+        }
+        else {
+            document.querySelectorAll('button[onclick*="settings"]').forEach(b => b.classList.add('active'));
+            document.getElementById('aladdin-container').style.display = 'none';
+        }
 
+        document.getElementById(id).classList.add('active');
         if(id === 'flashcards') flashcardApp.init();
-        if(id === 'quiz-challenge') document.getElementById('aladdin-container').style.display = 'flex';
-        else document.getElementById('aladdin-container').style.display = 'none';
     }
+    
     initQuiz() {
         const count = parseInt(document.getElementById('q-count').value) || 20;
         this.maxTime = parseInt(document.getElementById('q-time').value) || 30;
@@ -1145,7 +1127,16 @@ class QuizApp {
         this.questions = [...questionBank].sort(() => 0.5 - Math.random()).slice(0, count);
         this.allQuizHistory = []; 
         this.currentQIndex = 0;
-        this.score = 0;
+        
+        // Reset scores based on mode
+        if (this.simpleMode) {
+            this.score = 0;
+            this.ui.simpleScoreDisplay.innerText = "Score: 0";
+        } else {
+            this.xpScore = 0;
+            this.gamification.reset();
+        }
+        
         this.streak = 0;
         this.ui.score.innerText = '0';
         this.ui.streak.innerText = '0';
@@ -1153,10 +1144,12 @@ class QuizApp {
         this.showSection('quiz-challenge');
         this.loadQuestion();
     }
+    
     startNewQuiz() {
         this.ui.modal.classList.remove('active');
         this.showSection('settings');
     }
+    
     clearHistory() {
         if(confirm("Are you sure you want to clear all history, levels, and badges?")) {
             this.gamification.reset();
@@ -1164,35 +1157,47 @@ class QuizApp {
             this.showSection('settings');
         }
     }
+    
     endQuiz() {
         clearInterval(this.timer);
         this.showResults();
     }
+    
     showResults() {
-        document.getElementById('modal-title').innerText = this.score > (this.questions.length * 10) ? "VICTORY" : "QUIZ ENDED";
-        document.getElementById('modal-score').innerText = this.score;
+        const isSimple = this.simpleMode;
+        const finalScore = isSimple ? this.score : this.xpScore;
+        
+        document.getElementById('modal-title').innerText = this.questions.length > 0 ? "QUIZ ENDED" : "NO QUESTIONS";
+        document.getElementById('modal-score').innerText = finalScore;
+        
         let feedback = "";
-        const pct = this.score / (this.questions.length * 10);
+        const totalQuestions = this.questions.length;
+        // Adjust calculation logic for display
+        const pct = totalQuestions > 0 ? (finalScore / (totalQuestions * 10)) : 0; 
+        
         if(pct > 0.9) feedback = "Legendary Performance!";
         else if(pct > 0.7) feedback = "Excellent Work.";
         else if(pct > 0.5) feedback = "Good effort. Keep studying.";
         else feedback = "Time to review notes.";
+        
         document.getElementById('modal-feedback').innerText = feedback;
         this.ui.modal.classList.add('active');
         this.pet.setState('IDLE');
     }
+    
     showReview() {
         this.ui.modal.classList.remove('active');
         this.filterReview('all');
         this.showSection('review-section');
     }
+    
     filterReview(type) {
         this.ui.reviewContainer = document.getElementById('review-container');
         this.ui.reviewContainer.innerHTML = '';
         const list = type === 'all' ? this.allQuizHistory : this.allQuizHistory.filter(i => !i.isCorrect);
         
         if(list.length === 0) {
-            this.ui.reviewContainer.innerHTML = '<div style="text-align:center; color: var(--text-muted);">No questions to review.</div>';
+            this.ui.reviewContainer.innerHTML = '<div style="text-align:center;">No questions to review.</div>';
             return;
         }
 
@@ -1211,6 +1216,7 @@ class QuizApp {
             this.ui.reviewContainer.appendChild(div);
         });
     }
+    
     navQuestion(direction) {
         if (this.isAnswering) return;
         const newIndex = this.currentQIndex + direction;
@@ -1219,10 +1225,10 @@ class QuizApp {
             this.loadQuestion();
         }
     }
+    
     giveHint() {
         if(this.isAnswering) return;
         const q = this.questions[this.currentQIndex];
-        // Simple hint: First letter and length
         const hint = `Think! It starts with "${q.a.charAt(0)}" and has ${q.a.length} letters.`;
         this.ui.hintBubble.innerText = hint;
         this.ui.hintBubble.classList.add('show');
@@ -1230,6 +1236,7 @@ class QuizApp {
             this.ui.hintBubble.classList.remove('show');
         }, 4000);
     }
+    
     loadQuestion() {
         if (this.currentQIndex >= this.questions.length) {
             this.showResults();
@@ -1241,7 +1248,6 @@ class QuizApp {
         this.ui.question.innerText = q.q;
         this.ui.skipBtn.style.display = 'inline-block';
         this.ui.hintBubble.classList.remove('show');
-        this.ui.fbScore.style.display = 'none'; // Hide scoring breakdown
         
         const ttsEnabled = document.getElementById('tts-enable').checked;
         if(ttsEnabled) {
@@ -1262,6 +1268,7 @@ class QuizApp {
         });
         this.startTimer();
     }
+    
     startTimer() {
         clearInterval(this.timer);
         this.timeLeft = this.maxTime;
@@ -1283,6 +1290,7 @@ class QuizApp {
             }
         }, 100);
     }
+    
     checkAnswer(btn, selected, correct, rationale) {
         if (this.isAnswering) return;
         this.isAnswering = true;
@@ -1298,56 +1306,28 @@ class QuizApp {
             isCorrect: isCorrect
         });
 
-        // --- EASY SCORING LOGIC ---
-        let pointsGained = 0;
-        let pointsBreakdown = "";
-        
-        // Base Score
-        let baseScore = 10;
-        let streakBonus = 0;
+        const stats = { totalAnswered: this.gamification.earnedBadges.length + 1, streak: this.streak, totalCorrect: 0, lastTimeUsed: timeTaken };
         
         if (isCorrect) {
-            // Time Bonus
-            let timeBonus = 0;
-            if (timeTaken < 5) timeBonus = 5;
-            else if (timeTaken < 10) timeBonus = 2;
-            
-            // Streak Multiplier
-            let multiplier = 1;
-            if (this.streak >= 5) multiplier = 2;
-            if (this.streak >= 10) multiplier = 3;
-
-            streakBonus = (this.streak * multiplier) - 10; // Subtract base to avoid double counting the multiplier effect on base
-            if (streakBonus < 0) streakBonus = 0;
-
-            pointsGained = baseScore + timeBonus + streakBonus;
-            
-            // Generate Feedback Breakdown HTML
-            pointsBreakdown = `
-                <div class="score-row"><span>Base Score:</span> <span class="score-val">+${baseScore}</span></div>
-                ${timeBonus > 0 ? `<div class="score-row"><span>Time Bonus:</span> <span class="score-val">+${timeBonus}</span></div>` : ''}
-                ${streakBonus > 0 ? `
-                    <div class="score-row" style="margin-top:5px; border-top:1px dashed var(--text-muted); padding-top:5px;">
-                        <span>Streak (${this.streak}):</span> 
-                        <span class="streak-multiplier">x${multiplier}</span> 
-                        <span class="score-val">+${streakBonus}</span>
-                    </div>
-                ` : ''}
-                <div class="score-row" style="font-size:1.2rem; margin-top:10px; color:var(--success)">
-                    Total: +${pointsGained}
-                </div>
-            `;
-
             btn.classList.add('correct');
             this.confetti.burst(window.innerWidth/2, window.innerHeight/2);
             this.audio.playTone('correct');
             this.pet.setState('HAPPY');
             this.streak++;
-            this.gamification.addXP(20);
-        } else {
-            pointsGained = 0;
-            pointsBreakdown = `<div style="color:var(--accent)">No points earned.</div>`;
             
+            if (this.simpleMode) {
+                // Easy Scoring: +10 points
+                this.score += 10;
+                this.ui.score.innerText = this.score;
+                this.ui.simpleScoreDisplay.innerText = `Score: ${this.score}`;
+            } else {
+                // XP Scoring: +10 + streak bonus
+                this.xpScore += (10 + (this.streak * 2) + Math.max(0, Math.floor((this.maxTime - timeTaken))));
+                this.ui.score.innerText = this.xpScore;
+                this.gamification.addXP(20);
+            }
+
+        } else {
             btn.classList.add('wrong');
             this.audio.playTone('wrong');
             this.pet.setState('DIZZY');
@@ -1355,24 +1335,17 @@ class QuizApp {
             Array.from(allBtns).forEach(b => { if(b.innerText === correct) b.classList.add('correct'); });
         }
         
-        this.score += pointsGained;
-        this.ui.score.innerText = this.score;
         this.ui.streak.innerText = this.streak;
         document.body.classList.remove('stress-mode');
         this.ui.fbTitle.innerText = isCorrect ? "Correct!" : "Incorrect";
         this.ui.fbTitle.style.color = isCorrect ? "var(--success)" : "var(--accent)";
-        
-        // Show breakdown
-        this.ui.fbScore.innerHTML = pointsBreakdown;
-        this.ui.fbScore.style.display = 'flex';
-
         this.ui.fbText.innerText = rationale || `The correct answer is ${correct}.`;
         this.ui.fbPanel.classList.add('show');
         this.ui.skipBtn.style.display = 'none';
         
-        // Check Badges
-        const stats = { totalAnswered: this.gamification.earnedBadges.length + 1, streak: this.streak, totalCorrect: 0, lastTimeUsed: timeTaken };
-        this.gamification.checkBadges(stats);
+        if (!this.simpleMode) {
+            this.gamification.checkBadges(stats);
+        }
 
         setTimeout(() => {
             this.ui.fbPanel.classList.remove('show');
@@ -1380,28 +1353,34 @@ class QuizApp {
             this.loadQuestion();
         }, 4000);
     }
+    
     skipQuestion() {
         if (this.isAnswering) return;
         this.isAnswering = true;
         clearInterval(this.timer);
         
-        // Record History
-        this.allQuizHistory.push({ 
-            q: this.questions[this.currentQIndex], 
+        this.allQuizHistory.push({
+            q: this.questions[this.currentQIndex],
             userAnswer: "Skipped",
             isCorrect: false
         });
 
-        this.score = Math.max(0, this.score - 5);
+        if (this.simpleMode) {
+            this.score = Math.max(0, this.score - 5);
+            this.ui.score.innerText = this.score;
+            this.ui.simpleScoreDisplay.innerText = `Score: ${this.score}`;
+        } else {
+            // XP Penalty? Usually XP systems don't penalize, but we can reset streak
+            this.xpScore = Math.max(0, this.xpScore - 5);
+            this.ui.score.innerText = this.xpScore;
+        }
+        
         this.streak = 0;
-        this.ui.score.innerText = this.score;
         this.ui.streak.innerText = this.streak;
         this.pet.setState('DIZZY');
         this.ui.fbTitle.innerText = "Skipped";
         this.ui.fbTitle.style.color = "var(--text-muted)";
-        this.ui.fbScore.innerHTML = `<div style="color:var(--accent)">-5 Points</div>`;
-        this.ui.fbScore.style.display = 'flex';
-        this.ui.fbText.innerText = "You skipped this question.";
+        this.ui.fbText.innerText = "You skipped this question. (-5 pts)";
         this.ui.fbPanel.classList.add('show');
         this.ui.skipBtn.style.display = 'none';
         setTimeout(() => {
@@ -1410,14 +1389,14 @@ class QuizApp {
             this.loadQuestion();
         }, 2000);
     }
+    
     handleTimeout() {
         this.isAnswering = true;
         this.streak = 0;
         this.ui.streak.innerText = this.streak;
 
-        // Record History
-        this.allQuizHistory.push({ 
-            q: this.questions[this.currentQIndex], 
+        this.allQuizHistory.push({
+            q: this.questions[this.currentQIndex],
             userAnswer: "Timed Out",
             isCorrect: false
         });
@@ -1427,8 +1406,6 @@ class QuizApp {
         Array.from(this.ui.options.children).forEach(b => { if(b.innerText === q.a) b.classList.add('correct'); });
         this.ui.fbTitle.innerText = "Time's Up!";
         this.ui.fbTitle.style.color = "var(--accent)";
-        this.ui.fbScore.innerHTML = `<div style="color:var(--accent)">0 Points</div>`;
-        this.ui.fbScore.style.display = 'flex';
         this.ui.fbText.innerText = `The correct answer was ${q.a}. ${q.r}`;
         this.ui.fbPanel.classList.add('show');
         this.ui.skipBtn.style.display = 'none';
