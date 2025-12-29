@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Optimized Viewport for Mobile/Tablet to prevent zoom on taps -->
+    <!-- Optimized Viewport for Mobile/Tablet -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Final Physical Assessment</title>
     <style>
@@ -16,7 +16,6 @@
             --warning: #ffcc00;
             --text-main: #e0e6ed;
             --text-muted: #94a3b8;
-            /* System font stack for best performance on Windows/Mac/Android/iOS */
             --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
@@ -28,7 +27,6 @@
         }
         
         @media (hover: none) or (pointer: coarse) {
-            /* Touch devices: Ensure system cursor is visible/standard */
             * { cursor: auto !important; }
         }
 
@@ -71,7 +69,6 @@
             justify-content: center;
             transition: width 0.2s, height 0.2s, border-radius 0.2s, font-size 0.2s, opacity 0.2s;
             box-shadow: 0 0 10px var(--primary);
-            /* Hidden by default on touch via JS/CSS logic */
         }
 
         .cursor-shape-text { border-radius: 4px; }
@@ -94,6 +91,36 @@
             100% { transform: translateY(-50px) scale(0.5); opacity: 0; }
         }
 
+        /* --- Floating Action Button (Start Challenge) --- */
+        #fab-start {
+            position: fixed;
+            bottom: 100px; /* Moved UP from bottom */
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 4px 20px rgba(0, 255, 136, 0.4);
+            z-index: 90;
+            cursor: pointer;
+            transition: transform 0.3s, background 0.3s;
+            animation: pulse-btn 2s infinite;
+        }
+        
+        #fab-start:hover {
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        @keyframes pulse-btn {
+            0% { box-shadow: 0 0 0 rgba(0, 255, 136, 0); }
+            50% { box-shadow: 0 0 20px rgba(0, 255, 136, 0.6); }
+            100% { box-shadow: 0 0 0 rgba(0, 255, 136, 0); }
+        }
+
         /* --- Header --- */
         header {
             background: rgba(20, 20, 31, 0.95);
@@ -108,7 +135,7 @@
         }
 
         .big-rotating-title {
-            font-size: 1.5rem; /* Responsive base */
+            font-size: 1.5rem;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -157,7 +184,7 @@
             background: transparent;
             border: 1px solid var(--primary);
             color: var(--primary);
-            padding: 15px; /* Larger touch target */
+            padding: 15px;
             border-radius: 4px;
             transition: 0.3s;
             text-align: left;
@@ -165,7 +192,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            min-height: 44px; /* iOS HIG standard */
+            min-height: 44px;
         }
         .nav-btn:hover, .nav-btn.active {
             background: var(--primary);
@@ -227,7 +254,7 @@
             overflow-y: auto;
             position: relative;
             background: radial-gradient(circle at center, #161922 0%, #0a0a10 100%);
-            -webkit-overflow-scrolling: touch; /* Smooth scroll iOS */
+            -webkit-overflow-scrolling: touch;
         }
 
         .section { display: none; height: 100%; padding: 2rem; padding-bottom: 150px; }
@@ -240,12 +267,75 @@
         .card h3 { color: var(--secondary); margin-bottom: 1rem; border-bottom: 1px solid #444; padding-bottom: 0.5rem; }
         label { display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; }
         input[type="range"], input[type="number"], select, input[type="color"], input[type="text"] {
-            width: 100%; padding: 12px; background: #0a0a10; border: 1px solid #444; color: white; border-radius: 4px;
-            font-size: 16px; /* Prevent iOS zoom */
+            width: 100%; padding: 12px; background: #0a0a10; border: 1px solid #444; color: white; border-radius: 4px; font-size: 16px;
         }
 
         /* --- Quiz Interface --- */
-        .quiz-hud { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 10px; }
+        .quiz-hud {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 10px;
+        }
+
+        /* NEW: Top Stats Bar for Level/XP */
+        .hud-stats-bar {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--primary);
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+        }
+        .hud-level { font-size: 1.2rem; margin-right: 15px; }
+        .hud-xp { flex: 1; max-width: 300px; display: flex; align-items: center; gap: 10px; }
+        .hud-xp-bar { height: 8px; background: #333; border-radius: 4px; flex: 1; overflow: hidden; }
+        .hud-xp-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.5s; }
+
+        /* NEW: Power Up UI */
+        .powerup-container {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 50;
+        }
+        .powerup-btn {
+            background: var(--warning);
+            color: #000;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--warning);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.2s;
+            opacity: 0.5;
+            pointer-events: none; /* Disabled by default */
+        }
+        .powerup-btn.active {
+            opacity: 1;
+            pointer-events: auto;
+            cursor: pointer;
+            transform: scale(1.1);
+        }
+        .powerup-btn:active { transform: scale(0.95); }
+        .powerup-key {
+            background: #333;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
         .quiz-controls button {
             background: #333; border: none; color: #fff; padding: 10px 15px;
             border-radius: 4px; margin-left: 5px;
@@ -285,12 +375,24 @@
         .quiz-nav {
             display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; position: relative; z-index: 1; flex-wrap: wrap;
         }
+        /* NEW: Navigation Arrows */
         .btn-nav {
             background: var(--panel-bg); border: 1px solid var(--primary); color: var(--primary);
             padding: 12px 20px; border-radius: 4px; font-weight: bold;
-            flex: 1; /* Grow on mobile */
+            flex: 1; display: flex; align-items: center; gap: 10px;
         }
+        .btn-nav::before {
+            content: '';
+            display: inline-block;
+            width: 0; height: 0;
+            border-top: 6px solid var(--primary);
+            border-right: 6px solid transparent;
+            transition: 0.2s;
+        }
+        .btn-nav.prev::before { transform: rotate(135deg); }
+        .btn-nav.next::before { transform: rotate(-45deg); }
         .btn-nav:hover { background: var(--primary); color: #000; }
+        .btn-nav:hover::before { border-top-color: #000; }
 
         /* --- Aladdin Hint --- */
         #aladdin-container {
@@ -354,15 +456,16 @@
 
         /* --- Pet --- */
         #pet-game {
-            position: fixed; bottom: 20px; right: 20px; width: 120px; height: 120px;
+            position: fixed; bottom: 20px; right: 100px; /* Shifted left to make room for FAB */
+            width: 100px; height: 100px;
             background: rgba(20, 20, 31, 0.9); border: 2px solid var(--success);
             border-radius: 50%; display: flex; justify-content: center; align-items: center;
             box-shadow: 0 0 20px rgba(0,0,0,0.8); z-index: 50;
         }
-        #pet-canvas { width: 100px; height: 100px; }
+        #pet-canvas { width: 80px; height: 80px; }
         .pet-status {
             position: absolute; bottom: -25px; width: 150px; text-align: center;
-            font-size: 0.8rem; color: var(--text-muted); left: -15px;
+            font-size: 0.7rem; color: var(--text-muted); left: -25px;
         }
 
         /* --- Modals --- */
@@ -391,43 +494,48 @@
         .btn-danger:hover { background: #cc0044; }
 
         /* --- RESPONSIVE MEDIA QUERIES --- */
-        
-        /* Tablets Portrait & Mobile */
         @media (max-width: 1024px) {
             .app-container { flex-direction: column; }
             nav { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #333; flex-direction: row; overflow-x: auto; padding: 0.5rem; order: 1; }
-            .stats-panel { display: none; } /* Simplify on tablet */
-            .nav-btn span { display: none; } /* Hide text on small tablet, show icons */
-            .nav-btn::after { content: attr(data-icon); } /* Ensure icon is shown */
-            main { order: 2; }
+                .stats-panel { display: none; }
+                .nav-btn span { display: none; }
+                .nav-btn::after { content: attr(data-icon); }
+                main { order: 2; }
         }
 
         @media (max-width: 768px) {
             .big-timer-overlay { font-size: 8rem; }
             .big-rotating-title { font-size: 1.2rem; }
-            #pet-game { width: 80px; height: 80px; }
-            #pet-canvas { width: 60px; height: 60px; }
-            #aladdin-container { bottom: 90px; left: 10px; }
+            #pet-game { width: 60px; height: 60px; bottom: 10px; right: 10px; }
+            #pet-canvas { width: 50px; height: 50px; }
+            #aladdin-container { bottom: 80px; left: 10px; transform: scale(0.8); }
             .question-text { font-size: 1.1rem; }
             .options-grid { grid-template-columns: 1fr; }
+            .hud-stats-bar { flex-direction: column; gap: 5px; padding: 8px; }
+            .hud-level { font-size: 1rem; margin-right: 0; }
+            .hud-xp { width: 100%; }
+            .powerup-container { top: auto; bottom: 80px; right: 10px; }
+            /* Hide FAB on mobile if in settings, keep visible for quick restart */
+            #fab-start { bottom: 20px; right: 80px; width: 50px; height: 50px; font-size: 24px; }
             
-            /* On mobile, show text in nav again but wrap */
             .nav-btn { flex-direction: column; padding: 8px; justify-content: center; }
             .nav-btn span { display: block; font-size: 0.8rem; }
             
-            /* Hide custom cursor via CSS class addition in JS or media query */
             #custom-cursor { display: none !important; }
         }
     </style>
 </head>
 <body>
 
-<!-- Custom Cursor (Hidden on touch devices via CSS) -->
+<!-- Custom Cursor -->
 <div id="custom-cursor" class="cursor-shape-text">AMER ALSHARIF</div>
+
+<!-- FAB Start Button (Moved UP) -->
+<div id="fab-start" onclick="app.initQuiz()">▶</div>
 
 <!-- Aladdin Hint -->
 <div id="aladdin-container">
-    <div class="hint-bubble" id="hint-bubble">Think about the location...</div>
+    <div class="hint-bubble" id="hint-bubble">Think about location...</div>
     <div id="aladdin-avatar" onclick="app.giveHint()" data-icon="🧞‍♂️">🧞‍♂️</div>
     <div style="color: var(--warning); font-size: 0.8rem; font-weight: bold; margin-top: 5px;">CLICK FOR HINT</div>
 </div>
@@ -509,12 +617,24 @@
                 </div>
             </div>
             <div style="text-align:center; margin-top:2rem;">
+                <p style="color:var(--text-muted); margin-bottom:1rem;">Or use the floating button to start instantly!</p>
                 <button class="btn-main" onclick="app.initQuiz()">Start Challenge</button>
             </div>
         </section>
 
         <!-- Quiz Section -->
         <section id="quiz-challenge" class="section">
+            
+            <!-- NEW: Top HUD for Level/XP -->
+            <div class="hud-stats-bar">
+                <div class="hud-level">LVL <span id="hud-lvl-num">1</span></div>
+                <div class="hud-xp">
+                    <div style="width: 50px;">XP</div>
+                    <div class="hud-xp-bar"><div class="hud-xp-fill" id="hud-xp-fill"></div></div>
+                    <div style="width: 50px; text-align: right;" id="hud-xp-text">0/100</div>
+                </div>
+            </div>
+
             <div class="quiz-hud">
                 <div>Score: <span id="score" style="color:var(--success); font-weight:bold;">0</span> | Streak: <span id="streak" style="color:var(--warning); font-weight:bold;">0</span></div>
                 <div class="quiz-controls">
@@ -526,6 +646,14 @@
                 Question <span id="q-current">1</span>/<span id="q-total">20</span>
             </div>
 
+            <!-- NEW: Power Up UI -->
+            <div class="powerup-container">
+                <button id="btn-double-xp" class="powerup-btn" onclick="app.activatePowerUp()">
+                    <span>2x SCORE</span>
+                    <span class="powerup-key">[1]</span>
+                </button>
+            </div>
+
             <div class="big-timer-overlay" id="big-timer">30</div>
 
             <div class="question-box">
@@ -535,9 +663,9 @@
             <div class="options-grid" id="options-container"></div>
             
             <div class="quiz-nav">
-                <button class="btn-nav" onclick="app.navQuestion(-1)">Previous</button>
+                <button class="btn-nav prev" onclick="app.navQuestion(-1)" title="Previous Question">Previous</button>
                 <button class="btn-skip" onclick="app.skipQuestion()" id="skip-btn" style="margin:0; flex:0 0 auto;">Skip (-5 pts)</button>
-                <button class="btn-nav" onclick="app.navQuestion(1)">Next</button>
+                <button class="btn-nav next" onclick="app.navQuestion(1)" title="Next Question">Next</button>
             </div>
         </section>
 
@@ -608,7 +736,6 @@
 const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 const cursor = document.getElementById('custom-cursor');
 
-// Hide cursor logic on touch devices
 if (isTouchDevice) {
     cursor.style.display = 'none';
 }
@@ -623,12 +750,9 @@ const settings = {
 
 function updateCursorStyle() {
     const isVisible = settings.vis.value === 'visible';
-    // Only show if not touch device AND setting is visible
     cursor.style.display = (isVisible && !isTouchDevice) ? 'flex' : 'none';
-    
     cursor.className = '';
     cursor.classList.add(settings.shape.value);
-    
     cursor.style.fontSize = settings.size.value + 'px';
     cursor.style.color = settings.color.value;
     cursor.style.borderColor = settings.color.value;
@@ -694,21 +818,26 @@ class AudioController {
             gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.4);
             osc.start(); osc.stop(this.ctx.currentTime + 0.4);
+        } else if (type === 'powerup') {
+            // Magic sound for power up
+            osc.type = 'triangle'; osc.frequency.setValueAtTime(400, this.ctx.currentTime);
+            osc.frequency.linearRampToValueAtTime(800, this.ctx.currentTime + 0.2);
+            gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.5);
+            osc.start(); osc.stop(this.ctx.currentTime + 0.5);
         }
     }
 }
 
 /**
- * CONFETTI SYSTEM (Cross-Platform Canvas)
+ * CONFETTI SYSTEM
  */
 class ConfettiSystem {
     constructor() {
         this.canvas = document.getElementById('confetti-canvas');
         this.ctx = this.canvas.getContext('2d');
-        this.particles = []; 
-        this.resize();
-        window.addEventListener('resize', () => this.resize()); 
-        this.animate();
+        this.particles = []; this.resize();
+        window.addEventListener('resize', () => this.resize()); this.animate();
     }
     resize() {
         const dpr = window.devicePixelRatio || 1;
@@ -719,8 +848,8 @@ class ConfettiSystem {
         this.canvas.style.height = window.innerHeight + 'px';
     }
     burst(x, y) {
-        const colors = ['#00f3ff', '#bd00ff', '#ff0055', '#00ff88'];
-        for (let i = 0; i < 50; i++) {
+        const colors = ['#00f3ff', '#bd00ff', '#ff0055', '#00ff88', '#ffcc00']; // Added yellow for powerup
+        for (let i = 0; i < 60; i++) {
             this.particles.push({
                 x: x || window.innerWidth / 2, y: y || window.innerHeight / 2,
                 vx: (Math.random() - 0.5) * 20, vy: (Math.random() - 0.5) * 20,
@@ -780,13 +909,20 @@ class Gamification {
         this.updateUI();
     }
     updateUI() {
+        // Update Sidebar
         document.getElementById('level-num').innerText = this.level;
         document.getElementById('xp-text').innerText = `${this.xp}/${this.level * 100} XP`;
         document.getElementById('xp-fill').style.width = `${(this.xp / (this.level * 100)) * 100}%`;
+
+        // Update Top HUD
+        document.getElementById('hud-lvl-num').innerText = this.level;
+        const currentReq = this.level * 100;
+        document.getElementById('hud-xp-text').innerText = `${this.xp}/${currentReq}`;
+        document.getElementById('hud-xp-fill').style.width = `${(this.xp / currentReq) * 100}%`;
     }
 }
 
-// --- GENERATING 165 QUESTIONS (Filling) ---
+// --- GENERATING 165 QUESTIONS ---
 const baseQuestions = [
     { q: "Dysphagia refers to:", a: "Difficulty swallowing", opts: ["Difficulty swallowing", "Heartburn", "Loss of appetite", "Vomiting blood"], r: "Dysphagia is defined as difficulty swallowing." },
     { q: "Pyrosis (heartburn) is caused by:", a: "Reflux of gastric acid into esophagus and stomach", opts: ["Inflammation of liver", "Reflux of gastric acid into esophagus and stomach", "Appendicitis", "Spleen enlargement"], r: "Pyrosis results from reflux of gastric acid." },
@@ -805,18 +941,18 @@ const baseQuestions = [
     { q: "Deep palpation of the abdomen should be:", a: "5–8 cm", opts: ["2–3 cm", "5–8 cm", "10–12 cm", "Not recommended"], r: "Deep palpation typically reaches 5–8 cm." },
     { q: "Inspiratory Arrest (Murphy Sign) indicates:", a: "Inflammation of the gallbladder (cholecystitis)", opts: ["Normal liver function", "Inflammation of the gallbladder (cholecystitis)", "Spleen enlargement", "Appendicitis"], r: "Murphy's sign suggests acute cholecystitis." },
     { q: "Nocturia in a patient with heart failure occurs because:", a: "Recumbency at night promotes fluid resorption and excretion", opts: ["The person drinks more fluids at night", "Recumbency at night promotes fluid resorption and excretion", "Kidney function decreases at night", "Heart rate increases at night"], r: "Lying down allows peripheral fluid to return to circulation and be filtered by kidneys." },
-    { q: "When palpating the carotid arteries, you should:", a: "Palpate only one carotid artery at a time", opts: ["Palpate both arteries simultaneously", "Palpate only one carotid artery at a time", "Avoid palpation completely", "Palpate lightly at the same time"], r: "Palpating both can compromise cerebral blood flow." },
+    { q: "When palpating the carotid arteries, you should:", a: "Palpate only one carotid artery at a time", opts: ["Palpate both simultaneously", "Palpate only one carotid artery at a time", "Avoid palpation completely", "Palpate lightly at the same time"], r: "Palpating both can compromise cerebral blood flow." },
     { q: "The optimal position to inspect the jugular venous pulse is:", a: "Supine at 30–45 degrees", opts: ["Standing upright", "Supine at 0 degrees", "Supine at 30–45 degrees", "Sitting fully upright"], r: "30-45 degrees optimizes JVP visibility." },
     { q: "Normal jugular venous pulsation is:", a: "2 cm or less above the sternal angle", opts: ["1 cm above the sternal angle", "2 cm or less above the sternal angle", "3–4 cm above the sternal angle", "Not visible"], r: "JVP >3cm is elevated; normal is 2cm or less." },
     { q: "The aortic valve area is best auscultated at:", a: "Second right interspace", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Aortic area is the 2nd right intercostal space." },
     { q: "The pulmonic valve area is auscultated at:", a: "Second left interspace", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Pulmonic area is the 2nd left intercostal space." },
-    { q: "The tricuspid valve area is located at:", a: "Left lower sternal border", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Tricuspid area is the left lower sternal border." },
+    { q: "The tricuspid valve area is located at:", a: "Left lower sternal border", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Tricuspid area is left lower sternal border." },
     { q: "The mitral valve area is located at:", a: "Fifth interspace at left midclavicular line", opts: ["Second right interspace", "Second left interspace", "Left lower sternal border", "Fifth interspace at left midclavicular line"], r: "Mitral area is the apex (5th intercostal, midclavicular)." },
     { q: "The first heart sound (S1) is caused by:", a: "Closure of the AV valves", opts: ["Closure of the semilunar valves", "Closure of the AV valves", "Ventricular filling", "Atrial contraction"], r: "S1 is the 'lub' caused by AV (Mitral/Tricuspid) closure." },
     { q: "The second heart sound (S2) is caused by:", a: "Closure of the semilunar valves", opts: ["Closure of the semilunar valves", "Closure of the AV valves", "Ventricular filling", "Atrial contraction"], r: "S2 is the 'dub' caused by Aortic/Pulmonic valve closure." },
     { q: "To detect diastolic filling sounds, you should:", a: "Roll the patient toward their left side and use the bell at the apex", opts: ["Listen only in the supine position", "Roll the patient toward their left side and use the bell at the apex", "Listen with the diaphragm at the base", "Only palpate the apex"], r: "Left lateral decubitus position enhances S3/S4." },
     { q: "The modified Allen test is used to:", a: "Assess patency of radial and ulnar arteries and collateral circulation to the hand", opts: ["Measure blood pressure", "Assess patency of radial and ulnar arteries and collateral circulation to the hand", "Detect heart murmurs", "Evaluate venous return"], r: "Allen test checks ulnar artery patency before radial artery stick." },
-    { q: "Normal color return in the feet after compression should be:", a: "10 seconds or less", opts: ["5 seconds or less", "10 seconds or less", "15 seconds or less", "20 seconds or less"], r: "Capillary refill should be brisk, usually < 2 seconds, definitely < 10s." },
+    { q: "Normal color return in the feet after comparison should be:", a: "10 seconds or less", opts: ["5 seconds or less", "10 seconds or less", "15 seconds or less", "20 seconds or less"], r: "Capillary refill should be brisk, usually < 2 seconds, definitely < 10s." },
     { q: "A Doppler ultrasonic probe is used to:", a: "All of the above", opts: ["Detect a weak peripheral pulse", "Monitor blood pressure in infants or children", "Measure low blood pressure or blood pressure in a lower extremity", "All of the above"], r: "Doppler amplifies sound for weak pulses or BP measurement." },
     { q: "A thrill is:", a: "A palpable vibration that feels like the throat of a purring cat", opts: ["A type of heart sound heard with a stethoscope", "A palpable vibration that feels like the throat of a purring cat", "A normal finding in all adults", "A sign of weak pulses"], r: "A thrill is a palpable murmur." },
     { q: "Flexion is:", a: "Bending a limb at a joint", opts: ["Straightening a limb at a joint", "Bending a limb at a joint", "Moving a limb away from the midline", "Moving a limb toward the midline"], r: "Flexion decreases the angle of the joint." },
@@ -1032,6 +1168,11 @@ class QuizApp {
         this.maxTime = 30;
         this.isAnswering = false;
         this.startTime = 0;
+        
+        // NEW: Easy Scoring / Power Up State
+        this.powerUpAvailable = true; 
+        this.powerUpActive = false;
+
         this.ui = {
             question: document.getElementById('question-text'),
             options: document.getElementById('options-container'),
@@ -1045,7 +1186,9 @@ class QuizApp {
             fbTitle: document.getElementById('fb-title'),
             fbText: document.getElementById('fb-text'),
             skipBtn: document.getElementById('skip-btn'),
-            hintBubble: document.getElementById('hint-bubble')
+            hintBubble: document.getElementById('hint-bubble'),
+            fabStart: document.getElementById('fab-start'),
+            btnDoubleXP: document.getElementById('btn-double-xp')
         };
     }
     showSection(id) {
@@ -1053,15 +1196,22 @@ class QuizApp {
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         
-        // Responsive logic for nav highlighting
+        // Responsive logic
         if (id === 'review-section') document.querySelectorAll('.nav-btn')[0].classList.add('active'); 
         else if (id === 'quiz-challenge') document.querySelectorAll('.nav-btn')[0].classList.add('active');
         else if (id === 'flashcards') document.querySelectorAll('.nav-btn')[1].classList.add('active');
         else document.querySelectorAll('.nav-btn')[2].classList.add('active');
 
         if(id === 'flashcards') flashcardApp.init();
-        if(id === 'quiz-challenge') document.getElementById('aladdin-container').style.display = 'flex';
-        else document.getElementById('aladdin-container').style.display = 'none';
+        
+        // Show/Hide FAB
+        if (id === 'quiz-challenge') {
+            this.ui.fabStart.style.display = 'none';
+            document.getElementById('aladdin-container').style.display = 'flex';
+        } else {
+            this.ui.fabStart.style.display = 'flex';
+            document.getElementById('aladdin-container').style.display = 'none';
+        }
     }
     initQuiz() {
         const count = parseInt(document.getElementById('q-count').value) || 20;
@@ -1072,6 +1222,13 @@ class QuizApp {
         this.currentQIndex = 0;
         this.score = 0;
         this.streak = 0;
+        
+        // NEW: Reset Power Up
+        this.powerUpAvailable = true;
+        this.powerUpActive = false;
+        this.ui.btnDoubleXP.classList.remove('active');
+        this.ui.btnDoubleXP.title = "Press [1] for 2x Score";
+
         this.ui.score.innerText = '0';
         this.ui.streak.innerText = '0';
         this.ui.qTotal.innerText = this.questions.length;
@@ -1105,12 +1262,26 @@ class QuizApp {
         document.getElementById('modal-feedback').innerText = feedback;
         this.ui.modal.classList.add('active');
         this.pet.setState('IDLE');
+        this.ui.fabStart.style.display = 'flex';
     }
     showReview() {
         this.ui.modal.classList.remove('active');
         this.filterReview('all');
         this.showSection('review-section');
     }
+    
+    // NEW: Activate Power Up
+    activatePowerUp() {
+        if (!this.powerUpAvailable || this.isAnswering) return;
+        this.powerUpActive = true;
+        this.powerUpAvailable = false;
+        this.ui.btnDoubleXP.classList.add('active');
+        this.ui.btnDoubleXP.title = "ACTIVE!";
+        this.audio.playTone('powerup');
+        // Burst yellow confetti
+        this.confetti.burst(window.innerWidth/2, window.innerHeight/2);
+    }
+
     filterReview(type) {
         this.ui.reviewContainer = document.getElementById('review-container');
         this.ui.reviewContainer.innerHTML = '';
@@ -1161,6 +1332,13 @@ class QuizApp {
         }
         const q = this.questions[this.currentQIndex];
         this.isAnswering = false;
+        
+        // Reset Power Up for new question
+        this.powerUpAvailable = true;
+        this.powerUpActive = false;
+        this.ui.btnDoubleXP.classList.remove('active');
+        this.ui.btnDoubleXP.title = "Press [1] for 2x Score";
+
         this.ui.qCurrent.innerText = this.currentQIndex + 1;
         this.ui.question.innerText = q.q;
         this.ui.skipBtn.style.display = 'inline-block';
@@ -1222,14 +1400,28 @@ class QuizApp {
         });
 
         const stats = { totalAnswered: this.gamification.earnedBadges.length + 1, streak: this.streak, totalCorrect: 0, lastTimeUsed: timeTaken };
+        
+        // NEW: Apply Power Up Multiplier
+        let multiplier = 1;
+        if (this.powerUpActive) {
+            multiplier = 2;
+            this.powerUpAvailable = false;
+            this.powerUpActive = false;
+            this.ui.btnDoubleXP.classList.remove('active');
+        }
+
         if (isCorrect) {
             btn.classList.add('correct');
             this.confetti.burst(window.innerWidth/2, window.innerHeight/2);
             this.audio.playTone('correct');
             this.pet.setState('HAPPY');
-            this.score += (10 + (this.streak * 2) + Math.max(0, Math.floor((this.maxTime - timeTaken))));
+            
+            // Scoring with multiplier
+            const basePoints = 10 + (this.streak * 2) + Math.max(0, Math.floor((this.maxTime - timeTaken)));
+            this.score += basePoints * multiplier;
+            
             this.streak++;
-            this.gamification.addXP(20);
+            this.gamification.addXP(20 * multiplier);
         } else {
             btn.classList.add('wrong');
             this.audio.playTone('wrong');
@@ -1304,6 +1496,23 @@ class QuizApp {
             this.loadQuestion();
         }, 4000);
     }
+    
+    // NEW: Keyboard Navigation Logic
+    handleKeyInput(e) {
+        // Power Up Shortcut
+        if (e.key === '1' || e.key === '!') {
+            this.activatePowerUp();
+            return;
+        }
+        // Navigation Shortcuts (Left/Right Arrows)
+        if (this.ui.question.parentElement.offsetParent !== null) { // Only in quiz
+            if (e.key === 'ArrowLeft') {
+                this.navQuestion(-1);
+            } else if (e.key === 'ArrowRight') {
+                this.navQuestion(1);
+            }
+        }
+    }
 }
 
 class FlashcardApp {
@@ -1328,6 +1537,10 @@ class FlashcardApp {
 // Initialize
 const app = new QuizApp();
 const flashcardApp = new FlashcardApp();
+
+// Global Key Listener for Navigation & Powerups
+document.addEventListener('keydown', (e) => app.handleKeyInput(e));
+
 app.showSection('settings');
 </script>
 </body>
